@@ -3,277 +3,629 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konduit — Agency Intelligence Platform</title>
-    <meta name="description" content="Konduit gives agencies a unified intelligence layer: operational clarity, client transparency, and AI-powered insights that predict problems before they happen.">
+    <title>Konduit — Intelligence. Operations. Growth.</title>
+    <meta name="description" content="Konduit is the Agency Intelligence Platform that brings clarity to complexity, empowers teams, and drives measurable growth.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: #0F1115;
+            color: #ffffff;
+            font-family: 'Inter', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        :root {
+            --k-blue: #0EA5FF;
+            --k-deep: #1E40AF;
+            --k-teal: #06B6D4;
+            --k-indigo: #7C3AED;
+            --k-steel: #A1A1AA;
+            --k-charcoal: #0F1115;
+            --k-card: #111418;
+            --k-border: rgba(255,255,255,0.08);
+        }
+
+        /* Reveal animations */
+        [data-reveal] {
+            opacity: 0;
+            transform: translateY(2rem);
+            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+        [data-reveal-left] {
+            opacity: 0;
+            transform: translateX(-3rem);
+            transition: opacity 1s, transform 1s;
+        }
+        [data-reveal-left].revealed { opacity: 1; transform: translateX(0); }
+
+        /* Nav pill transition */
+        #site-nav.scrolled nav {
+            background: rgba(15, 17, 21, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 1rem;
+            max-width: 1200px;
+        }
+        #site-nav.scrolled { top: 1rem; left: 1rem; right: 1rem; }
+
+        /* Hero grid lines */
+        .hero-grid {
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+
+        /* Blue glow */
+        .blue-glow {
+            background: radial-gradient(ellipse 60% 50% at 30% 50%, rgba(14,165,255,0.12) 0%, transparent 70%);
+        }
+
+        /* How it works progress bar */
+        @keyframes k-progress {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+        .k-progress-bar {
+            animation: k-progress 6s linear forwards;
+            transform-origin: left;
+        }
+
+        /* Marquee */
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .marquee { animation: marquee 35s linear infinite; }
+
+        /* Blur word */
+        .blur-word-char {
+            display: inline-block;
+            transition: color 0.4s ease;
+        }
+
+        /* Noise overlay */
+        .noise::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Feature card border glow on hover */
+        .feature-card { transition: border-color 0.3s, background 0.3s; }
+        .feature-card:hover { border-color: rgba(14,165,255,0.3); background: rgba(14,165,255,0.03); }
+
+        /* Integration card */
+        .int-card { transition: border-color 0.3s, transform 0.3s, background 0.3s; }
+        .int-card:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.03); transform: scale(1.02); }
+        .int-card:hover .int-tag { background: white; color: #0F1115; }
+
+        /* Step underline */
+        .step-underline { transition: transform 0.5s cubic-bezier(0.22,1,0.36,1); transform-origin: left; }
+        .step-active .step-underline { transform: scaleX(1); }
+        .step-inactive .step-underline { transform: scaleX(0); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0F1115; }
+        ::-webkit-scrollbar-thumb { background: rgba(14,165,255,0.3); border-radius: 3px; }
+
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-950 text-white antialiased" x-data="{ mobileMenu: false }">
+<body x-data="{ mobileMenu: false }">
 
-{{-- Navigation --}}
-<header class="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-gray-950/80 backdrop-blur-md">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
+{{-- ============================================================ --}}
+{{-- NAVIGATION --}}
+{{-- ============================================================ --}}
+<header id="site-nav" class="fixed z-50 transition-all duration-500 top-0 left-0 right-0">
+    <nav class="mx-auto transition-all duration-500 max-w-[1400px]">
+        <div class="flex items-center justify-between px-6 lg:px-8 h-20 transition-all duration-500" id="nav-inner">
             {{-- Logo --}}
-            <a href="/" class="flex items-center gap-2.5">
-                <svg class="h-7 w-7 text-brand-500" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="32" height="32" rx="8" fill="currentColor" fill-opacity="0.15"/>
-                    <path d="M8 10C8 8.89543 8.89543 8 10 8H16C19.3137 8 22 10.6863 22 14C22 17.3137 19.3137 20 16 20H10V24H8V10Z" fill="currentColor"/>
-                    <circle cx="22" cy="22" r="4" fill="currentColor" fill-opacity="0.6"/>
+            <a href="/" class="flex items-center gap-3 group">
+                <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="navRing" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#0EA5FF"/>
+                            <stop offset="55%" stop-color="#1E40AF"/>
+                            <stop offset="100%" stop-color="#A1A1AA" stop-opacity="0.5"/>
+                        </linearGradient>
+                        <linearGradient id="navBlue" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                            <stop offset="0%" stop-color="#0EA5FF"/>
+                            <stop offset="100%" stop-color="#1E40AF"/>
+                        </linearGradient>
+                        <linearGradient id="navSteel" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                            <stop offset="0%" stop-color="#E4E4E7"/>
+                            <stop offset="100%" stop-color="#71717A"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="19" cy="19" r="17" stroke="url(#navRing)" stroke-width="2.5" fill="none"/>
+                    <rect x="11" y="9.5" width="3.8" height="19" rx="0.5" fill="url(#navSteel)"/>
+                    <polygon points="14.8,19 14.8,14.5 26,9.5 21.5,9.5" fill="url(#navBlue)"/>
+                    <polygon points="14.8,19 14.8,23.5 21.5,28.5 26,28.5" fill="url(#navBlue)"/>
                 </svg>
-                <span class="text-lg font-bold tracking-tight text-white">Konduit</span>
+                <div>
+                    <span class="block text-lg font-black tracking-widest text-white leading-none">KONDUIT</span>
+                    <span class="block text-[9px] font-mono tracking-[0.2em] text-[#0EA5FF]/70 leading-none mt-0.5">INTELLIGENCE. OPERATIONS. GROWTH.</span>
+                </div>
             </a>
 
-            {{-- Desktop Nav --}}
-            <nav class="hidden md:flex items-center gap-8">
-                <a href="#features" class="text-sm text-gray-400 hover:text-white transition-colors">Features</a>
-                <a href="#how-it-works" class="text-sm text-gray-400 hover:text-white transition-colors">How It Works</a>
-                <a href="#portals" class="text-sm text-gray-400 hover:text-white transition-colors">Portals</a>
-            </nav>
-
-            <div class="flex items-center gap-3">
-                <a href="{{ route('login') }}" class="hidden md:block text-sm text-gray-400 hover:text-white transition-colors px-4 py-2">
-                    Sign In
+            {{-- Desktop nav --}}
+            <div class="hidden md:flex items-center gap-10">
+                @foreach([['Platform', '#features'], ['How It Works', '#how-it-works'], ['Integrations', '#integrations'], ['Portals', '#portals']] as [$label, $href])
+                <a href="{{ $href }}" class="text-sm text-white/60 hover:text-white transition-colors relative group">
+                    {{ $label }}
+                    <span class="absolute -bottom-1 left-0 w-0 h-px bg-[#0EA5FF] transition-all duration-300 group-hover:w-full"></span>
                 </a>
-                <a href="{{ route('login') }}" class="inline-flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-600 transition-colors">
-                    Get Started
-                </a>
-                <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 text-gray-400 hover:text-white">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path x-show="!mobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        <path x-show="mobileMenu" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                @endforeach
             </div>
-        </div>
 
-        {{-- Mobile Menu --}}
-        <div x-show="mobileMenu" x-cloak class="md:hidden py-4 border-t border-white/5">
-            <nav class="flex flex-col gap-4">
-                <a href="#features" @click="mobileMenu = false" class="text-sm text-gray-400 hover:text-white">Features</a>
-                <a href="#how-it-works" @click="mobileMenu = false" class="text-sm text-gray-400 hover:text-white">How It Works</a>
-                <a href="#portals" @click="mobileMenu = false" class="text-sm text-gray-400 hover:text-white">Portals</a>
-                <a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-white">Sign In</a>
-            </nav>
+            {{-- Desktop CTA --}}
+            <div class="hidden md:flex items-center gap-4">
+                <a href="{{ route('login') }}" class="text-sm text-white/60 hover:text-white transition-colors">Sign in</a>
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-full bg-[#0EA5FF] hover:bg-[#0EA5FF]/90 text-black font-semibold text-sm px-5 h-9 transition-colors">
+                    Get Started
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+            </div>
+
+            {{-- Mobile toggle --}}
+            <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2 text-white/70 hover:text-white">
+                <svg x-show="!mobileMenu" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <svg x-show="mobileMenu" x-cloak class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </nav>
+
+    {{-- Mobile menu --}}
+    <div x-show="mobileMenu" x-cloak class="md:hidden fixed inset-0 bg-[#0F1115] z-40 flex flex-col px-8 pt-28 pb-8">
+        <div class="flex-1 flex flex-col justify-center gap-8">
+            @foreach([['Platform', '#features'], ['How It Works', '#how-it-works'], ['Integrations', '#integrations'], ['Portals', '#portals']] as [$label, $href])
+            <a href="{{ $href }}" @click="mobileMenu = false" class="text-4xl font-extrabold text-white hover:text-[#0EA5FF] transition-colors">{{ $label }}</a>
+            @endforeach
+        </div>
+        <div class="flex gap-3 pt-8 border-t border-white/10">
+            <a href="{{ route('login') }}" class="flex-1 flex items-center justify-center rounded-full border border-white/20 h-14 text-base font-semibold text-white hover:border-white/40 transition-colors" @click="mobileMenu = false">Sign in</a>
+            <a href="{{ route('login') }}" class="flex-1 flex items-center justify-center rounded-full bg-[#0EA5FF] h-14 text-base font-semibold text-black hover:bg-[#0EA5FF]/90 transition-colors" @click="mobileMenu = false">Get Started</a>
         </div>
     </div>
 </header>
 
-{{-- Hero --}}
-<section class="relative pt-32 pb-24 overflow-hidden">
-    {{-- Background gradient --}}
-    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-brand-500/10 blur-3xl"></div>
-        <div class="absolute top-40 left-1/4 w-96 h-96 rounded-full bg-indigo-500/5 blur-3xl"></div>
+{{-- ============================================================ --}}
+{{-- HERO --}}
+{{-- ============================================================ --}}
+<section class="relative min-h-screen flex flex-col justify-center overflow-hidden noise" id="hero" style="background-color: #0F1115;">
+    {{-- Grid lines --}}
+    <div class="absolute inset-0 hero-grid pointer-events-none"></div>
+
+    {{-- Blue glow --}}
+    <div class="absolute inset-0 blue-glow pointer-events-none"></div>
+
+    {{-- Subtle vertical lines (refined) --}}
+    <div class="absolute inset-0 pointer-events-none opacity-30">
+        @for($i = 1; $i <= 11; $i++)
+        <div class="absolute top-0 bottom-0 w-px bg-white/5" style="left: {{ 8.33 * $i }}%"></div>
+        @endfor
+        @for($i = 1; $i <= 7; $i++)
+        <div class="absolute left-0 right-0 h-px bg-white/5" style="top: {{ 12.5 * $i }}%"></div>
+        @endfor
     </div>
 
-    <div class="mx-auto max-w-7xl px-6 lg:px-8 relative">
-        <div class="text-center">
-            <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/20 bg-brand-500/10 px-4 py-1.5 mb-8">
-                <span class="h-1.5 w-1.5 rounded-full bg-brand-400 animate-pulse"></span>
-                <span class="text-xs font-medium text-brand-300 uppercase tracking-wider">Agency Intelligence Platform</span>
+    {{-- Corner accent --}}
+    <div class="absolute top-0 right-0 w-96 h-96 pointer-events-none" style="background: radial-gradient(circle at top right, rgba(14,165,255,0.06) 0%, transparent 70%)"></div>
+
+    <div class="relative z-10 w-full max-w-[1400px] mx-auto px-6 lg:px-12 py-32 lg:py-40">
+        <div class="lg:max-w-[58%]">
+            {{-- Eyebrow --}}
+            <div class="mb-8 opacity-0 translate-y-4 transition-all duration-700" id="hero-eyebrow">
+                <span class="inline-flex items-center gap-3 text-sm font-mono text-white/50">
+                    <span class="w-8 h-px bg-[#0EA5FF]/50"></span>
+                    Agency Intelligence Platform
+                </span>
             </div>
 
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-tight">
-                Run your agency<br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-indigo-400">with intelligence</span>
-            </h1>
+            {{-- Headline --}}
+            <div class="mb-12">
+                <h1 class="text-left leading-[0.92] tracking-tight text-white opacity-0 translate-y-8 transition-all duration-1000" id="hero-h1" style="font-size: clamp(2.5rem, 6.5vw, 6.5rem); font-weight: 900;">
+                    <span class="block">Agency operations,</span>
+                    <span class="block">
+                        built to&nbsp;<span id="blur-word-container" class="inline-block"></span>
+                    </span>
+                </h1>
+            </div>
 
-            <p class="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                Konduit gives agencies a unified operational layer — real-time project visibility, AI-powered client reporting, and proactive risk detection before problems reach your inbox.
+            {{-- Sub --}}
+            <p class="text-lg text-[#A1A1AA] max-w-lg leading-relaxed opacity-0 translate-y-4 transition-all duration-700 delay-300" id="hero-sub">
+                Konduit gives agencies a unified intelligence layer — real-time visibility across every client, AI-powered reporting, and proactive risk detection before problems reach your inbox.
             </p>
 
-            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="{{ route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-brand-500 px-8 py-3.5 text-base font-semibold text-white shadow-lg hover:bg-brand-600 transition-all hover:shadow-brand-500/20 hover:shadow-xl">
+            {{-- CTAs --}}
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 opacity-0 translate-y-4 transition-all duration-700 delay-500" id="hero-cta">
+                <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#0EA5FF] hover:bg-[#0EA5FF]/90 text-black font-semibold px-8 h-12 text-base transition-all hover:shadow-[0_0_30px_rgba(14,165,255,0.3)]">
                     Start Free Trial
-                    <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                 </a>
-                <a href="#how-it-works" class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-white/10 px-8 py-3.5 text-base font-semibold text-white hover:border-white/20 hover:bg-white/5 transition-all">
+                <a href="#how-it-works" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 hover:border-white/30 hover:bg-white/5 text-white font-semibold px-8 h-12 text-base transition-all">
                     See How It Works
                 </a>
             </div>
+        </div>
+    </div>
 
-            {{-- Stats --}}
-            <div class="mt-16 grid grid-cols-3 gap-6 max-w-lg mx-auto">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">18+</div>
-                    <div class="mt-1 text-sm text-gray-500">Intelligence Modules</div>
+    {{-- Bottom stats --}}
+    <div class="absolute bottom-10 left-0 right-0 px-6 lg:px-12 opacity-0 transition-all duration-700 delay-700" id="hero-stats">
+        <div class="max-w-[1400px] mx-auto flex items-start gap-10 lg:gap-20">
+            @foreach([['18+', 'intelligence modules'], ['AI-powered', 'client reporting'], ['Multi-tenant', 'SaaS platform']] as [$val, $label])
+            <div class="flex flex-col gap-1.5">
+                <span class="text-3xl lg:text-4xl font-black text-white tracking-tight">{{ $val }}</span>
+                <span class="text-xs font-mono text-white/40 leading-tight">{{ $label }}</span>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- Scroll cue --}}
+    <div class="absolute bottom-10 right-8 lg:right-12 flex flex-col items-center gap-2 opacity-30">
+        <div class="w-px h-16 bg-gradient-to-b from-transparent to-[#0EA5FF]"></div>
+        <span class="text-[10px] font-mono text-white/40 tracking-widest rotate-90 mt-2">SCROLL</span>
+    </div>
+</section>
+
+{{-- ============================================================ --}}
+{{-- FEATURES --}}
+{{-- ============================================================ --}}
+<section id="features" class="relative py-24 lg:py-32 overflow-hidden">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+
+        {{-- Header --}}
+        <div class="relative mb-20 lg:mb-28">
+            <div class="grid lg:grid-cols-12 gap-8 items-end">
+                <div class="lg:col-span-7">
+                    <span class="inline-flex items-center gap-3 text-sm font-mono text-[#A1A1AA] mb-6" data-reveal>
+                        <span class="w-12 h-px bg-[#0EA5FF]/40"></span>
+                        Platform Capabilities
+                    </span>
+                    <h2 class="tracking-tight leading-[0.9] text-white" style="font-size: clamp(3rem, 7vw, 7.5rem); font-weight: 900;" data-reveal>
+                        Intelligent<br>
+                        <span class="text-white/30">operations.</span>
+                    </h2>
                 </div>
-                <div class="text-center border-x border-white/10">
-                    <div class="text-3xl font-bold text-white">AI</div>
-                    <div class="mt-1 text-sm text-gray-500">Powered Insights</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">∞</div>
-                    <div class="mt-1 text-sm text-gray-500">Clients Supported</div>
+                <div class="lg:col-span-5 lg:pb-4" data-reveal>
+                    <p class="text-xl text-[#A1A1AA] leading-relaxed">
+                        Not another project manager. An intelligence layer that turns your agency data into decisions — and your agency work into client clarity.
+                    </p>
                 </div>
             </div>
         </div>
 
-        {{-- Dashboard Preview --}}
-        <div class="mt-20 relative">
-            <div class="rounded-2xl border border-white/10 bg-gray-900 shadow-2xl overflow-hidden">
-                {{-- Fake browser chrome --}}
-                <div class="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-gray-900/80">
-                    <span class="h-3 w-3 rounded-full bg-red-500/60"></span>
-                    <span class="h-3 w-3 rounded-full bg-yellow-500/60"></span>
-                    <span class="h-3 w-3 rounded-full bg-green-500/60"></span>
-                    <div class="ml-4 flex-1 rounded-md bg-gray-800 h-6 max-w-xs px-3 flex items-center">
-                        <span class="text-xs text-gray-500">konduit.shopbluewolf.com/dashboard</span>
+        {{-- Bento Grid --}}
+        <div class="grid lg:grid-cols-12 gap-4 lg:gap-5">
+
+            {{-- Card 01 — Full width, particle canvas --}}
+            <div class="lg:col-span-12 relative border border-white/8 min-h-[480px] overflow-hidden flex feature-card" style="background: var(--k-card);" data-reveal>
+                {{-- Left: text --}}
+                <div class="relative flex-1 p-8 lg:p-12" style="z-index: 2;">
+                    <canvas id="particle-canvas" class="absolute inset-0 pointer-events-auto" style="width:100%; height:100%;"></canvas>
+                    <div class="relative" style="z-index: 3;">
+                        <span class="font-mono text-sm text-[#A1A1AA]">01</span>
+                        <h3 class="text-3xl lg:text-4xl font-black mt-4 mb-5 tracking-tight text-white">Executive Intelligence</h3>
+                        <p class="text-lg text-[#A1A1AA] leading-relaxed max-w-md mb-8">
+                            Real-time KPIs across every client and project. Revenue forecasts, risk signals, and portfolio health — all in one view. No spreadsheet required.
+                        </p>
+                        <div>
+                            <span class="text-5xl lg:text-6xl font-black text-white tracking-tight">360°</span>
+                            <span class="block text-sm font-mono text-[#A1A1AA] mt-2">agency-wide visibility</span>
+                        </div>
                     </div>
                 </div>
-                {{-- Mock Dashboard Content --}}
-                <div class="p-6 bg-gray-900">
-                    {{-- Stat cards --}}
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                        @foreach([['Clients', '12', 'text-brand-400'], ['Active Projects', '8', 'text-green-400'], ['Open Tickets', '23', 'text-yellow-400'], ['Retainers', '9', 'text-indigo-400']] as [$label, $val, $color])
-                        <div class="rounded-xl bg-gray-800 p-4 border border-white/5">
-                            <div class="text-2xl font-bold {{ $color }}">{{ $val }}</div>
-                            <div class="text-xs text-gray-500 mt-1">{{ $label }}</div>
-                            <div class="mt-3 h-1 rounded-full bg-gray-700">
-                                <div class="h-1 rounded-full {{ str_replace('text-', 'bg-', $color) }}" style="width: {{ rand(40, 85) }}%"></div>
+                {{-- Right: dashboard mockup --}}
+                <div class="hidden lg:block relative w-[42%] shrink-0 overflow-hidden">
+                    <div class="absolute inset-0 p-6 flex flex-col gap-3" style="z-index: 2;">
+                        <div class="text-xs font-mono text-[#0EA5FF]/60 mb-2">LIVE — Agency Overview</div>
+                        @foreach([['Apex Commerce', 87, '#0EA5FF'], ['Meridian Health', 72, '#06B6D4'], ['Solis Partners', 55, '#7C3AED'], ['Irongate Media', 91, '#0EA5FF']] as [$name, $score, $color])
+                        <div class="rounded-lg border border-white/8 p-3" style="background: rgba(255,255,255,0.03);">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-white">{{ $name }}</span>
+                                <span class="text-sm font-mono" style="color: {{ $color }}">{{ $score }}</span>
+                            </div>
+                            <div class="h-1.5 rounded-full bg-white/8">
+                                <div class="h-1.5 rounded-full" style="width: {{ $score }}%; background: {{ $color }};"></div>
                             </div>
                         </div>
                         @endforeach
-                    </div>
-                    {{-- Project rows --}}
-                    <div class="rounded-xl bg-gray-800 border border-white/5 overflow-hidden">
-                        <div class="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-                            <span class="text-sm font-medium text-white">Active Projects</span>
-                            <span class="text-xs text-brand-400">View all →</span>
+                        <div class="mt-2 flex gap-3">
+                            @foreach([['4', 'Clients'], ['8', 'Projects'], ['23', 'Tickets']] as [$n, $l])
+                            <div class="flex-1 rounded-lg border border-white/8 p-3" style="background: rgba(255,255,255,0.03);">
+                                <div class="text-xl font-black text-white">{{ $n }}</div>
+                                <div class="text-xs text-[#A1A1AA]">{{ $l }}</div>
+                            </div>
+                            @endforeach
                         </div>
-                        @foreach([['Apex Q3 SEO Campaign', 'Apex Commerce', '42%', 'bg-brand-500'], ['Meridian Content Series', 'Meridian Health', '25%', 'bg-green-500'], ['Website Redesign', 'Apex Commerce', '15%', 'bg-yellow-500']] as [$proj, $client, $pct, $color])
-                        <div class="flex items-center gap-4 px-4 py-3 border-b border-white/5 last:border-0">
-                            <div class="h-8 w-8 rounded-lg {{ $color }}/20 flex items-center justify-center flex-shrink-0">
-                                <span class="text-xs font-bold {{ str_replace('bg-', 'text-', $color) }}">{{ strtoupper(substr($proj, 0, 1)) }}</span>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#111418] via-[#111418]/60 to-transparent" style="z-index: 1;"></div>
+                </div>
+            </div>
+
+            {{-- Cards 02 + 03 --}}
+            <div class="lg:col-span-6 relative border border-white/8 p-8 lg:p-10 overflow-hidden feature-card" style="background: var(--k-card); min-height: 320px;" data-reveal>
+                <span class="font-mono text-sm text-[#A1A1AA]">02</span>
+                <h3 class="text-2xl lg:text-3xl font-black mt-4 mb-4 tracking-tight text-white">Client Intelligence</h3>
+                <p class="text-[#A1A1AA] leading-relaxed mb-8">
+                    Health scores, retention risk flags, and relationship timelines for every account. Know which clients need attention before they ask.
+                </p>
+                <div class="flex items-end gap-3">
+                    <span class="text-4xl font-black text-white">AI</span>
+                    <span class="text-sm font-mono text-[#A1A1AA] mb-1">health monitoring</span>
+                </div>
+                {{-- Mini health indicators --}}
+                <div class="absolute bottom-6 right-6 flex gap-2">
+                    @foreach([[87,'#0EA5FF'],[72,'#06B6D4'],[55,'#7C3AED'],[91,'#0EA5FF']] as [$h,$c])
+                    <div class="w-1.5 rounded-full" style="height: {{ $h/5 }}px; background: {{ $c }}; opacity: 0.7;"></div>
+                    @endforeach
+                </div>
+                <div class="absolute top-0 right-0 bottom-0 w-32 pointer-events-none" style="background: radial-gradient(ellipse at right center, rgba(6,182,212,0.06) 0%, transparent 70%);"></div>
+            </div>
+
+            <div class="lg:col-span-6 relative border border-white/8 p-8 lg:p-10 overflow-hidden feature-card" style="background: var(--k-card); min-height: 320px;" data-reveal>
+                <span class="font-mono text-sm text-[#A1A1AA]">03</span>
+                <h3 class="text-2xl lg:text-3xl font-black mt-4 mb-4 tracking-tight text-white">AI Report Writer</h3>
+                <p class="text-[#A1A1AA] leading-relaxed mb-8">
+                    Technical metrics translated into plain language. Automated client-facing reports that make your work legible — and your agency indispensable.
+                </p>
+                <div class="flex items-end gap-3">
+                    <span class="text-4xl font-black text-white">0 min</span>
+                    <span class="text-sm font-mono text-[#A1A1AA] mb-1">report generation</span>
+                </div>
+                <div class="absolute top-0 right-0 bottom-0 w-32 pointer-events-none" style="background: radial-gradient(ellipse at right center, rgba(14,165,255,0.06) 0%, transparent 70%);"></div>
+            </div>
+
+            {{-- Card 04 --}}
+            <div class="lg:col-span-12 relative border border-white/8 p-8 lg:p-12 overflow-hidden feature-card" style="background: var(--k-card);" data-reveal>
+                <div class="grid lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <span class="font-mono text-sm text-[#A1A1AA]">04</span>
+                        <h3 class="text-3xl lg:text-4xl font-black mt-4 mb-5 tracking-tight text-white">Ticket & Approval Engine</h3>
+                        <p class="text-lg text-[#A1A1AA] leading-relaxed">
+                            Structured intake with AI classification, smart routing, and a clean client-facing approval workflow. No more reply-all chains, lost attachments, or missed deadlines.
+                        </p>
+                        <div class="mt-8 flex items-end gap-3">
+                            <span class="text-4xl font-black text-white">100%</span>
+                            <span class="text-sm font-mono text-[#A1A1AA] mb-1">audit trail</span>
+                        </div>
+                    </div>
+                    {{-- Ticket flow visual --}}
+                    <div class="flex flex-col gap-3">
+                        @foreach([
+                            ['Client Submission', 'Website widget / portal', '#0EA5FF', 'M3 8l7-7 7 7M5 6v10a2 2 0 002 2h10a2 2 0 002-2V6'],
+                            ['AI Classification', 'Type · Priority · Route', '#06B6D4', 'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18'],
+                            ['Team Assignment', 'Routed to right person', '#7C3AED', 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0'],
+                            ['Client Update', 'Plain-language status', '#0EA5FF', 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z']
+                        ] as [$step, $sub, $color, $icon])
+                        <div class="flex items-center gap-4 rounded-lg border border-white/8 p-3" style="background: rgba(255,255,255,0.02);">
+                            <div class="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: {{ $color }}15;">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="{{ $color }}" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $icon }}"/>
+                                </svg>
                             </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="text-sm font-medium text-white truncate">{{ $proj }}</div>
-                                <div class="text-xs text-gray-500">{{ $client }}</div>
+                            <div>
+                                <div class="text-sm font-semibold text-white">{{ $step }}</div>
+                                <div class="text-xs text-[#A1A1AA]">{{ $sub }}</div>
                             </div>
-                            <div class="flex items-center gap-3 flex-shrink-0">
-                                <div class="w-24 h-1.5 rounded-full bg-gray-700">
-                                    <div class="h-1.5 rounded-full {{ $color }}" style="width: {{ $pct }}"></div>
-                                </div>
-                                <span class="text-xs text-gray-400 w-8">{{ $pct }}</span>
-                            </div>
+                            <div class="ml-auto w-2 h-2 rounded-full flex-shrink-0" style="background: {{ $color }};"></div>
                         </div>
                         @endforeach
                     </div>
                 </div>
             </div>
-            {{-- Glow --}}
-            <div class="absolute -inset-4 bg-brand-500/5 rounded-3xl blur-xl -z-10"></div>
         </div>
     </div>
 </section>
 
-{{-- Features --}}
-<section id="features" class="py-24 border-t border-white/5">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold text-white">Built for how agencies actually work</h2>
-            <p class="mt-4 text-gray-400 max-w-xl mx-auto">Not another project manager. An intelligence layer that turns operational data into decisions.</p>
+{{-- ============================================================ --}}
+{{-- HOW IT WORKS --}}
+{{-- ============================================================ --}}
+<section
+    id="how-it-works"
+    class="relative py-24 lg:py-32 overflow-hidden noise"
+    style="background-color: #090c10;"
+    x-data="{ step: 0 }"
+    x-init="setInterval(() => step = (step + 1) % 3, 6000)"
+>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style="background: radial-gradient(circle, rgba(14,165,255,0.04) 0%, transparent 70%);"></div>
+
+    <div class="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
+        {{-- Header --}}
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-end mb-0 lg:mb-0">
+            <div class="pb-0 lg:pb-24">
+                <span class="inline-flex items-center gap-3 text-sm font-mono text-white/40 mb-8 block" data-reveal-left>
+                    <span class="w-12 h-px inline-block bg-[#0EA5FF]/30 mr-3"></span>
+                    How It Works
+                </span>
+                <h2 class="tracking-tight leading-[0.88] text-white" style="font-size: clamp(3rem, 7vw, 7rem); font-weight: 900;" data-reveal>
+                    <span class="block">Capture.</span>
+                    <span class="block" style="color: rgba(255,255,255,0.3);">Classify.</span>
+                    <span class="block" style="color: rgba(255,255,255,0.1);">Deliver.</span>
+                </h2>
+            </div>
+
+            {{-- Animated diagram --}}
+            <div class="relative h-64 lg:h-[500px] overflow-hidden" data-reveal>
+                <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8">
+                    @foreach([[0,'Intake','Client submits request'],[1,'AI Brain','Classify & route'],[2,'Resolution','Deliver & report']] as [$i,$label,$sub])
+                    <div class="w-full max-w-xs rounded-xl border p-4 transition-all duration-500"
+                        :class="step === {{ $i }} ? 'border-[#0EA5FF]/40 bg-[#0EA5FF]/8 scale-105' : 'border-white/8 bg-white/2 scale-100'"
+                        style="background: rgba(255,255,255,0.02);">
+                        <div class="flex items-center gap-3">
+                            <div class="h-8 w-8 rounded-full flex items-center justify-center text-sm font-black transition-colors"
+                                :class="step === {{ $i }} ? 'bg-[#0EA5FF] text-black' : 'bg-white/10 text-white/40'">
+                                {{ sprintf('%02d', $i + 1) }}
+                            </div>
+                            <div>
+                                <div class="font-semibold text-sm text-white">{{ $label }}</div>
+                                <div class="text-xs text-[#A1A1AA]">{{ $sub }}</div>
+                            </div>
+                            <div class="ml-auto w-2 h-2 rounded-full transition-colors"
+                                :class="step === {{ $i }} ? 'bg-[#0EA5FF]' : 'bg-white/20'"></div>
+                        </div>
+                    </div>
+                    @if($i < 2)
+                    <div class="w-px h-4 transition-colors" :class="step > {{ $i }} ? 'bg-[#0EA5FF]/60' : 'bg-white/10'"></div>
+                    @endif
+                    @endforeach
+                </div>
+                <div class="absolute inset-x-0 bottom-0 h-20" style="background: linear-gradient(to top, #090c10, transparent);"></div>
+            </div>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @php
-            $features = [
-                ['icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', 'title' => 'Executive Intelligence', 'desc' => 'Real-time KPIs, revenue forecasts, and risk signals across every client and project — without opening a spreadsheet.', 'color' => 'text-brand-400 bg-brand-500/10'],
-                ['icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'title' => 'Client Intelligence', 'desc' => 'Health scores, retention risk flags, communication patterns, and relationship timelines for every account.', 'color' => 'text-green-400 bg-green-500/10'],
-                ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title' => 'AI Report Writer', 'desc' => 'Automatically generate client-facing reports translated from technical metrics into plain language executives understand.', 'color' => 'text-indigo-400 bg-indigo-500/10'],
-                ['icon' => 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z', 'title' => 'Ticketing & Approvals', 'desc' => 'Structured intake with AI classification, internal routing, and a clean client-facing approval workflow — no email chains.', 'color' => 'text-yellow-400 bg-yellow-500/10'],
-                ['icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'title' => 'Financial Intelligence', 'desc' => 'Retainer tracking, profitability per client, budget burn rates, and subscription billing through Stripe — all in one view.', 'color' => 'text-orange-400 bg-orange-500/10'],
-                ['icon' => 'M13 10V3L4 14h7v7l9-11h-7z', 'title' => 'Capacity Engine', 'desc' => 'Workload forecasting, resource allocation, and team utilisation tracking so you never overcommit again.', 'color' => 'text-pink-400 bg-pink-500/10'],
-            ];
-            @endphp
-
-            @foreach($features as $feature)
-            <div class="group rounded-2xl border border-white/5 bg-gray-900 p-6 hover:border-white/10 hover:bg-gray-800/50 transition-all">
-                <div class="h-10 w-10 rounded-xl {{ $feature['color'] }} flex items-center justify-center mb-4">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $feature['icon'] }}"/>
-                    </svg>
+        {{-- Steps --}}
+        <div class="grid lg:grid-cols-3 gap-4 mt-0">
+            @foreach([
+                [0,'01','Capture','the request','Clients submit via your branded portal or an embeddable website widget. Screenshots, full context, and attachments are all captured automatically — no follow-up needed.'],
+                [1,'02','Classify','& route','Konduit\'s Intake AI reads the submission and classifies it by type, urgency, and the most likely resolution path. The right person gets it instantly — with full context already attached.'],
+                [2,'03','Deliver','& report','Work gets done. Your client sees plain-language status updates in their portal. When resolved, AI generates a summary. The loop closes automatically.']
+            ] as [$idx, $num, $title, $sub, $desc])
+            <button
+                type="button"
+                @click="step = {{ $idx }}"
+                class="relative text-left p-8 lg:p-10 border transition-all duration-500 cursor-pointer"
+                :class="step === {{ $idx }} ? 'border-white/50 bg-black' : 'border-white/15 bg-black hover:border-white/30'"
+            >
+                {{-- Number + progress line --}}
+                <div class="flex items-center gap-4 mb-8">
+                    <span class="text-4xl font-black transition-colors duration-300" :class="step === {{ $idx }} ? 'text-[#0EA5FF]' : 'text-white/20'">{{ $num }}</span>
+                    <div class="flex-1 h-px bg-white/10 overflow-hidden">
+                        <template x-if="step === {{ $idx }}">
+                            <div class="h-full bg-[#0EA5FF]/60 k-progress-bar"></div>
+                        </template>
+                    </div>
                 </div>
-                <h3 class="text-base font-semibold text-white mb-2">{{ $feature['title'] }}</h3>
-                <p class="text-sm text-gray-400 leading-relaxed">{{ $feature['desc'] }}</p>
-            </div>
+
+                <h3 class="text-3xl lg:text-4xl font-black mb-2 text-white tracking-tight">{{ $title }}</h3>
+                <span class="text-xl text-white/30 font-semibold block mb-6">{{ $sub }}</span>
+                <p class="text-[#A1A1AA] leading-relaxed text-sm lg:text-base" :class="step === {{ $idx }} ? 'opacity-100' : 'opacity-60'">{{ $desc }}</p>
+
+                {{-- Bottom accent bar --}}
+                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0EA5FF] step-underline" :class="step === {{ $idx }} ? 'step-active' : 'step-inactive'"></div>
+            </button>
             @endforeach
         </div>
     </div>
 </section>
 
-{{-- How It Works --}}
-<section id="how-it-works" class="py-24 border-t border-white/5 bg-gray-900/30">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold text-white">What happens when a request comes in</h2>
-            <p class="mt-4 text-gray-400 max-w-xl mx-auto">From client intake to resolution — every step is tracked, classified, and summarised automatically.</p>
+{{-- ============================================================ --}}
+{{-- METRICS --}}
+{{-- ============================================================ --}}
+<section id="metrics" class="relative py-32 lg:py-40 overflow-hidden">
+    {{-- Dot grid background (canvas) --}}
+    <canvas id="grid-canvas" class="absolute inset-0 pointer-events-none" style="width:100%; height:100%;"></canvas>
+
+    <div class="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
+        {{-- Header --}}
+        <div class="grid lg:grid-cols-12 gap-8 mb-20 lg:mb-28">
+            <div class="lg:col-span-9">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono" style="background: rgba(14,165,255,0.1); color: #0EA5FF;">
+                        <span class="w-2 h-2 rounded-full animate-pulse" style="background: #0EA5FF;"></span>
+                        LIVE
+                    </span>
+                    <span class="text-sm font-mono text-[#A1A1AA]" id="live-time"></span>
+                </div>
+                <h2 class="tracking-tight leading-[0.95] text-white" style="font-size: clamp(2.5rem, 6vw, 7rem); font-weight: 900;" data-reveal>
+                    Platform<br>
+                    <span style="color: rgba(255,255,255,0.3);">intelligence metrics.</span>
+                </h2>
+            </div>
         </div>
 
-        <div class="relative">
-            {{-- Connecting line --}}
-            <div class="absolute left-1/2 top-6 bottom-6 w-px bg-gradient-to-b from-brand-500/50 via-indigo-500/30 to-transparent hidden md:block"></div>
-
-            <div class="grid md:grid-cols-2 gap-8 md:gap-12">
-                @php
-                $steps = [
-                    ['n' => '01', 'title' => 'Client submits via widget or portal', 'desc' => 'Clients submit requests through an embeddable widget or their dedicated portal. Screenshots, attachments, and descriptions are all captured.', 'side' => 'left'],
-                    ['n' => '02', 'title' => 'AI classifies and summarises', 'desc' => 'Konduit\'s Intake AI classifies the request by type, priority, and likely resolution path — and generates an internal summary for your team.', 'side' => 'right'],
-                    ['n' => '03', 'title' => 'Routed to the right person', 'desc' => 'Tickets are automatically matched to clients and assigned based on project ownership and team capacity.', 'side' => 'left'],
-                    ['n' => '04', 'title' => 'Client stays informed', 'desc' => 'Clients see plain-language status updates in their portal. Internal notes never surface to clients. Resolved tickets generate AI summaries.', 'side' => 'right'],
-                ];
-                @endphp
-
-                @foreach($steps as $i => $step)
-                <div class="{{ $step['side'] === 'right' ? 'md:col-start-2' : '' }} flex items-start gap-4">
-                    <div class="flex-shrink-0 h-12 w-12 rounded-xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center">
-                        <span class="text-sm font-bold text-brand-400">{{ $step['n'] }}</span>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-semibold text-white mb-1">{{ $step['title'] }}</h3>
-                        <p class="text-sm text-gray-400 leading-relaxed">{{ $step['desc'] }}</p>
-                    </div>
+        {{-- Metrics grid --}}
+        <div class="grid lg:grid-cols-3 gap-5">
+            {{-- Primary metric --}}
+            <div class="lg:col-span-1 border border-white/8 p-10 lg:p-12" style="background: rgba(255,255,255,0.015);" data-reveal>
+                <div class="text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-white mb-4 tabular-nums">
+                    <span data-counter="4247">0</span>
                 </div>
-                @endforeach
+                <div class="mb-5">
+                    <canvas id="dot-graph-1" style="width:100%; height: 40px; display:block;"></canvas>
+                </div>
+                <div class="text-base font-semibold text-white mb-1">Reports generated this month</div>
+                <div class="text-sm font-mono text-[#A1A1AA]">by AI Report Writer</div>
             </div>
+
+            {{-- Secondary metrics --}}
+            <div class="border border-white/8 p-8 flex flex-col justify-between gap-6" style="background: rgba(255,255,255,0.015);" data-reveal>
+                <div>
+                    <div class="text-sm font-mono text-[#A1A1AA] mb-1">across all tenants</div>
+                    <div class="text-base font-semibold text-white mb-3">Platform uptime</div>
+                    <canvas id="dot-graph-2" style="width:100%; height: 28px; display:block;"></canvas>
+                </div>
+                <div class="text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight text-white tabular-nums">
+                    <span data-counter="99" data-suffix=".9%">0</span>
+                </div>
+            </div>
+
+            <div class="border border-white/8 p-8 flex flex-col justify-between gap-6" style="background: rgba(255,255,255,0.015);" data-reveal>
+                <div>
+                    <div class="text-sm font-mono text-[#A1A1AA] mb-1">avg intake classification</div>
+                    <div class="text-base font-semibold text-white mb-3">AI ticket classification</div>
+                    <canvas id="dot-graph-3" style="width:100%; height: 28px; display:block;"></canvas>
+                </div>
+                <div class="text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight text-white tabular-nums">
+                    <span class="text-2xl text-[#A1A1AA]">&lt;</span><span data-counter="60" data-suffix=" sec">0</span>
+                </div>
+            </div>
+        </div>
+
+        {{-- Bottom ticker --}}
+        <div class="mt-14 pt-8 border-t border-white/8 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm font-mono text-[#A1A1AA]" data-reveal>
+            @foreach(['GA4', 'Google Search Console', 'HubSpot', 'Shopify', 'Stripe', 'Slack', 'Figma', 'ClickUp']) as $tool)
+            <span>{{ $tool }}</span>
+            @endforeach
+            <span class="text-[#0EA5FF]">+20 integrations</span>
         </div>
     </div>
 </section>
 
-{{-- Portals --}}
-<section id="portals" class="py-24 border-t border-white/5">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold text-white">Two portals, one platform</h2>
-            <p class="mt-4 text-gray-400 max-w-xl mx-auto">Your team gets full operational control. Your clients get clarity without noise.</p>
+{{-- ============================================================ --}}
+{{-- PORTALS --}}
+{{-- ============================================================ --}}
+<section id="portals" class="relative py-24 lg:py-32 border-t border-white/5" style="background-color: #090c10;">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+        <div class="text-center mb-16" data-reveal>
+            <span class="inline-flex items-center gap-4 text-sm font-mono text-[#A1A1AA] mb-8">
+                <span class="w-12 h-px bg-[#0EA5FF]/30"></span>
+                Dual Portal Architecture
+                <span class="w-12 h-px bg-[#0EA5FF]/30"></span>
+            </span>
+            <h2 class="tracking-tight text-white mb-4" style="font-size: clamp(2rem, 5vw, 5rem); font-weight: 900;">Two portals.<br><span style="color: rgba(255,255,255,0.3);">One platform.</span></h2>
+            <p class="text-[#A1A1AA] text-xl max-w-xl mx-auto">Your team gets full operational control. Your clients get clarity without noise. Internal notes never surface.</p>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
+        <div class="grid md:grid-cols-2 gap-6">
             {{-- Agency Portal --}}
-            <div class="rounded-2xl border border-white/10 bg-gray-900 overflow-hidden">
-                <div class="px-6 pt-6 pb-4 border-b border-white/5">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="h-8 w-8 rounded-lg bg-brand-500/10 flex items-center justify-center">
-                            <svg class="h-4 w-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            <div class="border border-white/8 overflow-hidden" style="background: var(--k-card);" data-reveal>
+                <div class="px-8 pt-8 pb-5 border-b border-white/8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="h-9 w-9 rounded-xl flex items-center justify-center" style="background: rgba(14,165,255,0.1);">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="#0EA5FF" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-semibold text-brand-400 uppercase tracking-wider">Agency Portal</span>
+                        <span class="text-xs font-mono font-semibold tracking-wider" style="color: #0EA5FF;">AGENCY PORTAL</span>
                     </div>
-                    <h3 class="text-xl font-bold text-white">Operational Control</h3>
-                    <p class="text-sm text-gray-400 mt-1">Everything your team needs to run accounts, manage projects, and stay ahead of risks.</p>
+                    <h3 class="text-2xl font-black text-white tracking-tight">Operational Command</h3>
+                    <p class="text-sm text-[#A1A1AA] mt-1">Everything your team needs to run accounts, close the loop, and stay ahead.</p>
                 </div>
-                <div class="p-6 space-y-3">
-                    @foreach(['Executive dashboard with live KPIs', 'Client health scores and retention signals', 'Project progress and budget tracking', 'Ticket management with AI summaries', 'Retainer billing and service tracking', 'Team capacity and workload view', 'AI-generated internal reports'] as $item)
-                    <div class="flex items-center gap-3 text-sm text-gray-300">
-                        <svg class="h-4 w-4 text-brand-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                        </svg>
+                <div class="p-8 space-y-3">
+                    @foreach(['Executive dashboard with live KPIs & risk signals','Client health scores and retention intelligence','Project progress, budget burn & milestone tracking','AI-classified ticket management and routing','Retainer billing, service tracking, and capacity view','Team workload and capacity forecasting','AI-generated internal and client-facing reports']) as $item)
+                    <div class="flex items-center gap-3 text-sm text-[#A1A1AA]">
+                        <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#0EA5FF" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         {{ $item }}
                     </div>
                     @endforeach
@@ -281,25 +633,23 @@
             </div>
 
             {{-- Client Portal --}}
-            <div class="rounded-2xl border border-white/10 bg-gray-900 overflow-hidden">
-                <div class="px-6 pt-6 pb-4 border-b border-white/5">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
-                            <svg class="h-4 w-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            <div class="border border-white/8 overflow-hidden" style="background: var(--k-card);" data-reveal>
+                <div class="px-8 pt-8 pb-5 border-b border-white/8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="h-9 w-9 rounded-xl flex items-center justify-center" style="background: rgba(6,182,212,0.1);">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="#06B6D4" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-semibold text-green-400 uppercase tracking-wider">Client Portal</span>
+                        <span class="text-xs font-mono font-semibold tracking-wider" style="color: #06B6D4;">CLIENT PORTAL</span>
                     </div>
-                    <h3 class="text-xl font-bold text-white">Client Transparency</h3>
-                    <p class="text-sm text-gray-400 mt-1">A clean, jargon-free window into their work — without access to your internal operations.</p>
+                    <h3 class="text-2xl font-black text-white tracking-tight">Radical Transparency</h3>
+                    <p class="text-sm text-[#A1A1AA] mt-1">A clean, jargon-free window into their work. No access to your internals.</p>
                 </div>
-                <div class="p-6 space-y-3">
-                    @foreach(['Project progress in plain language', 'Budget and retainer status', 'Ticket submission and status tracking', 'Deliverable review and approvals', 'AI-generated monthly reports', 'No internal notes ever visible', 'Every metric explained simply'] as $item)
-                    <div class="flex items-center gap-3 text-sm text-gray-300">
-                        <svg class="h-4 w-4 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                        </svg>
+                <div class="p-8 space-y-3">
+                    @foreach(['Project progress in plain, non-technical language','Budget and retainer status at a glance','Ticket submission and real-time status tracking','Deliverable review, feedback, and approvals','AI-generated monthly performance reports','Internal notes and team discussions never visible','Every metric explained simply — no jargon']) as $item)
+                    <div class="flex items-center gap-3 text-sm text-[#A1A1AA]">
+                        <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#06B6D4" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         {{ $item }}
                     </div>
                     @endforeach
@@ -309,45 +659,544 @@
     </div>
 </section>
 
-{{-- CTA --}}
-<section class="py-24 border-t border-white/5">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="relative rounded-3xl bg-gradient-to-br from-brand-600 to-indigo-600 p-12 text-center overflow-hidden">
-            <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-                <div class="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/5 blur-2xl"></div>
-                <div class="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-black/10 blur-2xl"></div>
+{{-- ============================================================ --}}
+{{-- INTEGRATIONS --}}
+{{-- ============================================================ --}}
+<section id="integrations" class="relative overflow-hidden py-24 lg:py-32">
+    <div class="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
+        {{-- Header --}}
+        <div class="text-center mb-16">
+            <span class="inline-flex items-center gap-4 text-sm font-mono text-[#A1A1AA] mb-8 justify-center" data-reveal>
+                <span class="w-12 h-px bg-[#0EA5FF]/30"></span>
+                Integrations
+                <span class="w-12 h-px bg-[#0EA5FF]/30"></span>
+            </span>
+            <h2 class="tracking-tight text-white mb-6" style="font-size: clamp(2.5rem, 6vw, 6rem); font-weight: 900;" data-reveal>
+                Connect<br>
+                <span style="color: rgba(255,255,255,0.3);">everything.</span>
+            </h2>
+            <p class="text-xl text-[#A1A1AA] max-w-lg mx-auto" data-reveal>
+                Konduit connects to the tools agencies already use — via official APIs and OAuth only. No browser extensions. No scrapers.
+            </p>
+        </div>
+
+        {{-- Marquee row 1 --}}
+        <div class="overflow-hidden mb-4 relative" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+            <div class="marquee flex gap-4 w-max">
+                @php
+                $row1 = [['GA4','Analytics'],['Google Search Console','SEO'],['HubSpot','CRM'],['Shopify','eComm'],['Stripe','Payments'],['Slack','Comms'],['GitHub','Code'],['Figma','Design'],['GA4','Analytics'],['Google Search Console','SEO'],['HubSpot','CRM'],['Shopify','eComm'],['Stripe','Payments'],['Slack','Comms'],['GitHub','Code'],['Figma','Design']];
+                @endphp
+                @foreach($row1 as [$name, $cat])
+                <div class="flex-shrink-0 flex items-center gap-3 border border-white/8 px-5 py-3 rounded-lg" style="background: var(--k-card);">
+                    <span class="text-sm font-medium text-white">{{ $name }}</span>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded" style="background: rgba(14,165,255,0.1); color: #0EA5FF;">{{ $cat }}</span>
+                </div>
+                @endforeach
             </div>
-            <div class="relative">
-                <h2 class="text-3xl sm:text-4xl font-bold text-white">Ready to run a smarter agency?</h2>
-                <p class="mt-4 text-lg text-white/70 max-w-xl mx-auto">Get started today — no credit card required. Your team can be up and running in under 30 minutes.</p>
-                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="{{ route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-8 py-3.5 text-base font-semibold text-brand-700 shadow-lg hover:bg-gray-50 transition-colors">
-                        Start Free Trial
-                    </a>
-                    <a href="{{ route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-white/20 px-8 py-3.5 text-base font-semibold text-white hover:bg-white/10 transition-colors">
-                        Sign In
-                    </a>
+        </div>
+
+        {{-- Marquee row 2 --}}
+        <div class="overflow-hidden mb-16 relative" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+            <div class="flex gap-4 w-max" style="animation: marquee 28s linear infinite reverse;">
+                @php
+                $row2 = [['ClickUp','PM'],['Asana','PM'],['Harvest','Time'],['Clockify','Time'],['Microsoft 365','Docs'],['WordPress','CMS'],['WooCommerce','eComm'],['Jira','Dev'],['ClickUp','PM'],['Asana','PM'],['Harvest','Time'],['Clockify','Time'],['Microsoft 365','Docs'],['WordPress','CMS'],['WooCommerce','eComm'],['Jira','Dev']];
+                @endphp
+                @foreach($row2 as [$name, $cat])
+                <div class="flex-shrink-0 flex items-center gap-3 border border-white/8 px-5 py-3 rounded-lg" style="background: var(--k-card);">
+                    <span class="text-sm font-medium text-white">{{ $name }}</span>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded" style="background: rgba(6,182,212,0.1); color: #06B6D4;">{{ $cat }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Stats row --}}
+        <div class="flex flex-wrap items-center justify-between gap-8 pt-12 border-t border-white/8" data-reveal>
+            <div class="flex flex-wrap gap-12">
+                @foreach([['20+','Native integrations'],['OAuth','Auth built-in'],['Webhooks','Real-time sync']] as [$val, $label])
+                <div class="flex items-baseline gap-3">
+                    <span class="text-3xl font-black text-white">{{ $val }}</span>
+                    <span class="text-sm text-[#A1A1AA]">{{ $label }}</span>
+                </div>
+                @endforeach
+            </div>
+            <span class="text-sm font-mono text-[#A1A1AA]">Official APIs only — no scrapers, no workarounds →</span>
+        </div>
+    </div>
+</section>
+
+{{-- ============================================================ --}}
+{{-- CTA --}}
+{{-- ============================================================ --}}
+<section class="relative py-24 lg:py-32 overflow-hidden" style="background-color: #090c10;">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+        <div
+            id="cta-box"
+            class="relative border border-white/20 overflow-hidden"
+            onmousemove="ctaMouseMove(event, this)"
+            data-reveal
+        >
+            {{-- Spotlight --}}
+            <div id="cta-spotlight" class="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0"></div>
+
+            {{-- Corner decorations --}}
+            <div class="absolute top-0 right-0 w-24 h-24 border-b border-l border-white/10"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 border-t border-r border-white/10"></div>
+
+            <div class="relative z-10 px-8 lg:px-16 py-16 lg:py-24">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-12">
+                    <div class="flex-1 max-w-2xl">
+                        <h2 class="tracking-tight text-white mb-6 leading-[0.95]" style="font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 900;">
+                            Ready to run<br>a smarter agency?
+                        </h2>
+                        <p class="text-xl text-[#A1A1AA] mb-10 leading-relaxed">
+                            Get started today — no credit card required. Your team and clients can be live in under 30 minutes.
+                        </p>
+                        <div class="flex flex-col sm:flex-row items-start gap-4">
+                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 rounded-full bg-[#0EA5FF] hover:bg-[#0EA5FF]/90 text-black font-bold px-8 h-14 text-base transition-all hover:shadow-[0_0_40px_rgba(14,165,255,0.35)] group">
+                                Start Free Trial
+                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                            </a>
+                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-full border border-white/20 hover:bg-white/5 hover:border-white/40 text-white font-semibold px-8 h-14 text-base transition-all">
+                                Book a Demo
+                            </a>
+                        </div>
+                        <p class="text-sm font-mono text-[#A1A1AA]/60 mt-6">Free 14-day trial · No credit card · Cancel anytime</p>
+                    </div>
+
+                    {{-- Right: Stats --}}
+                    <div class="grid grid-cols-2 gap-4 lg:w-72 flex-shrink-0">
+                        @foreach([['18+','Intelligence modules'],['AI','Powered reporting'],['∞','Client portals'],['100%','Audit trail']] as [$n, $l])
+                        <div class="border border-white/8 p-5 rounded-xl" style="background: rgba(255,255,255,0.02);">
+                            <div class="text-2xl font-black text-[#0EA5FF]">{{ $n }}</div>
+                            <div class="text-xs text-[#A1A1AA] mt-1">{{ $l }}</div>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-{{-- Footer --}}
-<footer class="border-t border-white/5 py-10">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-            <svg class="h-5 w-5 text-brand-500" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="currentColor" fill-opacity="0.15"/>
-                <path d="M8 10C8 8.89543 8.89543 8 10 8H16C19.3137 8 22 10.6863 22 14C22 17.3137 19.3137 20 16 20H10V24H8V10Z" fill="currentColor"/>
-                <circle cx="22" cy="22" r="4" fill="currentColor" fill-opacity="0.6"/>
-            </svg>
-            <span class="text-sm font-semibold text-white">Konduit</span>
+{{-- ============================================================ --}}
+{{-- FOOTER --}}
+{{-- ============================================================ --}}
+<footer class="relative bg-black border-t border-white/5">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-12 py-16 lg:py-20">
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-10 lg:gap-8">
+            {{-- Brand --}}
+            <div class="col-span-2">
+                <a href="/" class="flex items-center gap-3 mb-6">
+                    <svg width="32" height="32" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="ftRing" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#0EA5FF"/>
+                                <stop offset="55%" stop-color="#1E40AF"/>
+                                <stop offset="100%" stop-color="#A1A1AA" stop-opacity="0.5"/>
+                            </linearGradient>
+                            <linearGradient id="ftBlue" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                                <stop offset="0%" stop-color="#0EA5FF"/><stop offset="100%" stop-color="#1E40AF"/>
+                            </linearGradient>
+                            <linearGradient id="ftSteel" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox">
+                                <stop offset="0%" stop-color="#E4E4E7"/><stop offset="100%" stop-color="#71717A"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="19" cy="19" r="17" stroke="url(#ftRing)" stroke-width="2.5" fill="none"/>
+                        <rect x="11" y="9.5" width="3.8" height="19" rx="0.5" fill="url(#ftSteel)"/>
+                        <polygon points="14.8,19 14.8,14.5 26,9.5 21.5,9.5" fill="url(#ftBlue)"/>
+                        <polygon points="14.8,19 14.8,23.5 21.5,28.5 26,28.5" fill="url(#ftBlue)"/>
+                    </svg>
+                    <div>
+                        <span class="block text-base font-black tracking-widest text-white leading-none">KONDUIT</span>
+                        <span class="block text-[8px] font-mono tracking-[0.15em] text-[#0EA5FF]/60 leading-none mt-0.5">INTELLIGENCE. OPERATIONS. GROWTH.</span>
+                    </div>
+                </a>
+                <p class="text-sm text-white/40 leading-relaxed mb-6 max-w-xs">
+                    The Agency Intelligence Platform. We bring clarity to complexity, empower teams, and drive measurable growth.
+                </p>
+                <div class="flex gap-5">
+                    @foreach(['Twitter','LinkedIn','GitHub']) as $s)
+                    <a href="#" class="text-sm text-white/40 hover:text-white transition-colors">{{ $s }}</a>
+                    @endforeach
+                </div>
+            </div>
+
+            {{-- Links --}}
+            @php
+            $links = [
+                'Platform' => [['Dashboard','#features'],['How It Works','#how-it-works'],['Integrations','#integrations'],['Pricing','#']],
+                'Portals' => [['Agency Portal','#portals'],['Client Portal','#portals'],['AI Reports','#features'],['Ticket Engine','#features']],
+                'Company' => [['About','#'],['Blog','#'],['Careers','#'],['Contact','#']],
+                'Legal' => [['Privacy','#'],['Terms','#'],['Security','#']],
+            ];
+            @endphp
+            @foreach($links as $section => $items)
+            <div>
+                <h3 class="text-sm font-semibold text-white mb-5">{{ $section }}</h3>
+                <ul class="space-y-3">
+                    @foreach($items as [$name, $href])
+                    <li>
+                        <a href="{{ $href }}" class="text-sm text-white/40 hover:text-white transition-colors">{{ $name }}</a>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+            @endforeach
         </div>
-        <p class="text-sm text-gray-500">&copy; {{ date('Y') }} Konduit. Agency Intelligence Platform.</p>
-        <a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-white transition-colors">Sign In →</a>
+    </div>
+
+    {{-- Bottom bar --}}
+    <div class="border-t border-white/5 py-6">
+        <div class="max-w-[1400px] mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-white/30">&copy; {{ date('Y') }} Konduit. All rights reserved.</p>
+            <div class="flex items-center gap-2 text-sm text-white/30">
+                <span class="w-2 h-2 rounded-full animate-pulse" style="background: #0EA5FF;"></span>
+                All systems operational
+            </div>
+        </div>
     </div>
 </footer>
+
+<script>
+(function() {
+    // ============================================================
+    // NAV SCROLL BEHAVIOR
+    // ============================================================
+    const nav = document.getElementById('site-nav');
+    const navInner = document.getElementById('nav-inner');
+    function updateNav() {
+        if (window.scrollY > 20) {
+            nav.classList.add('scrolled');
+            navInner.style.height = '56px';
+        } else {
+            nav.classList.remove('scrolled');
+            navInner.style.height = '';
+        }
+    }
+    window.addEventListener('scroll', updateNav, { passive: true });
+
+    // ============================================================
+    // HERO ENTRANCE ANIMATIONS
+    // ============================================================
+    setTimeout(() => {
+        const eyebrow = document.getElementById('hero-eyebrow');
+        const h1 = document.getElementById('hero-h1');
+        const sub = document.getElementById('hero-sub');
+        const cta = document.getElementById('hero-cta');
+        const stats = document.getElementById('hero-stats');
+        if (eyebrow) { eyebrow.style.opacity = '1'; eyebrow.style.transform = 'translateY(0)'; }
+        setTimeout(() => { if (h1) { h1.style.opacity = '1'; h1.style.transform = 'translateY(0)'; } }, 150);
+        setTimeout(() => { if (sub) { sub.style.opacity = '1'; sub.style.transform = 'translateY(0)'; } }, 350);
+        setTimeout(() => { if (cta) { cta.style.opacity = '1'; cta.style.transform = 'translateY(0)'; } }, 500);
+        setTimeout(() => { if (stats) { stats.style.opacity = '1'; } }, 700);
+    }, 100);
+
+    // ============================================================
+    // BLUR WORD ANIMATION
+    // ============================================================
+    const words = ['report', 'retain', 'scale', 'deliver'];
+    const gradColors = ['#0EA5FF', '#06B6D4', '#1E40AF', '#0EA5FF'];
+    let wordIdx = 0;
+    const container = document.getElementById('blur-word-container');
+
+    function hexToRgb(hex) {
+        const r = parseInt(hex.slice(1,3), 16);
+        const g = parseInt(hex.slice(3,5), 16);
+        const b = parseInt(hex.slice(5,7), 16);
+        return [r, g, b];
+    }
+    function lerpColor(c1, c2, t) {
+        const [r1,g1,b1] = hexToRgb(c1);
+        const [r2,g2,b2] = hexToRgb(c2);
+        return `rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
+    }
+
+    function animateWord(word) {
+        if (!container) return;
+        container.innerHTML = '';
+        const STAGGER = 45;
+        const DURATION = 450;
+        const GRADIENT_HOLD = STAGGER * word.length + DURATION + 300;
+
+        word.split('').forEach((char, i) => {
+            const span = document.createElement('span');
+            span.textContent = char;
+            span.className = 'blur-word-char';
+            span.style.opacity = '0';
+            span.style.filter = 'blur(20px)';
+            // Color per letter position
+            const frac = word.length > 1 ? i / (word.length - 1) : 0;
+            const ci = frac * (gradColors.length - 1);
+            const lo = Math.floor(ci), hi = Math.min(lo + 1, gradColors.length - 1);
+            const col = lerpColor(gradColors[lo], gradColors[hi], ci - lo);
+            span.style.color = col;
+            container.appendChild(span);
+
+            setTimeout(() => {
+                const start = performance.now();
+                const tick = (now) => {
+                    const progress = Math.min((now - start) / DURATION, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    span.style.opacity = eased;
+                    span.style.filter = `blur(${20 * (1 - eased)}px)`;
+                    if (progress < 1) requestAnimationFrame(tick);
+                };
+                requestAnimationFrame(tick);
+            }, i * STAGGER);
+        });
+
+        setTimeout(() => {
+            Array.from(container.children).forEach(span => {
+                span.style.color = 'white';
+            });
+        }, GRADIENT_HOLD);
+    }
+
+    if (container) {
+        animateWord(words[0]);
+        setInterval(() => {
+            wordIdx = (wordIdx + 1) % words.length;
+            animateWord(words[wordIdx]);
+        }, 2800);
+    }
+
+    // ============================================================
+    // INTERSECTION OBSERVER — SECTION REVEALS
+    // ============================================================
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const delay = parseInt(el.dataset.delay || '0');
+                setTimeout(() => el.classList.add('revealed'), delay);
+                revealObserver.unobserve(el);
+            }
+        });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('[data-reveal], [data-reveal-left]').forEach((el, i) => {
+        el.dataset.delay = (i % 4) * 80;
+        revealObserver.observe(el);
+    });
+
+    // ============================================================
+    // PARTICLE CANVAS (Features)
+    // ============================================================
+    const pCanvas = document.getElementById('particle-canvas');
+    if (pCanvas) {
+        const pCtx = pCanvas.getContext('2d');
+        const particles = Array.from({ length: 65 }, (_, i) => {
+            const seed = i * 1.618;
+            return {
+                bx: (seed * 127.1) % 1,
+                by: (seed * 311.7) % 1,
+                phase: seed * Math.PI * 2,
+                speed: 0.4 + (seed % 0.4),
+                radius: 1.2 + (seed % 2.0),
+            };
+        });
+        let pTime = 0;
+        const mouseP = { x: 0.5, y: 0.5 };
+
+        pCanvas.addEventListener('mousemove', (e) => {
+            const rect = pCanvas.getBoundingClientRect();
+            mouseP.x = (e.clientX - rect.left) / rect.width;
+            mouseP.y = (e.clientY - rect.top) / rect.height;
+        });
+
+        function resizeP() {
+            const rect = pCanvas.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            pCanvas.width = rect.width * dpr;
+            pCanvas.height = rect.height * dpr;
+            pCtx.scale(dpr, dpr);
+        }
+        resizeP();
+        window.addEventListener('resize', resizeP);
+
+        function renderP() {
+            const rect = pCanvas.getBoundingClientRect();
+            const w = rect.width, h = rect.height;
+            pCtx.clearRect(0, 0, w, h);
+
+            particles.forEach(p => {
+                const flowX = Math.sin(pTime * p.speed * 0.4 + p.phase) * 35;
+                const flowY = Math.cos(pTime * p.speed * 0.3 + p.phase * 0.7) * 22;
+                const bx = p.bx * w, by = p.by * h;
+                const dx = p.bx - mouseP.x, dy = p.by - mouseP.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const influence = Math.max(0, 1 - dist * 2.8);
+                const x = bx + flowX + influence * Math.cos(pTime + p.phase) * 32;
+                const y = by + flowY + influence * Math.sin(pTime + p.phase) * 32;
+                const pulse = Math.sin(pTime * p.speed + p.phase) * 0.5 + 0.5;
+                const alpha = 0.06 + pulse * 0.14 + influence * 0.25;
+
+                pCtx.beginPath();
+                pCtx.arc(x, y, p.radius + pulse * 0.8, 0, Math.PI * 2);
+                // Konduit blue particles
+                const r = Math.round(14 + influence * 50);
+                const g = Math.round(165 + influence * 20);
+                pCtx.fillStyle = `rgba(${r}, ${g}, 255, ${alpha})`;
+                pCtx.fill();
+            });
+
+            pTime += 0.016;
+            requestAnimationFrame(renderP);
+        }
+        renderP();
+    }
+
+    // ============================================================
+    // GRID BACKGROUND CANVAS (Metrics)
+    // ============================================================
+    const gCanvas = document.getElementById('grid-canvas');
+    if (gCanvas) {
+        const gCtx = gCanvas.getContext('2d');
+        let gTime = 0;
+
+        function resizeG() {
+            const rect = gCanvas.getBoundingClientRect();
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            gCanvas.width = rect.width * dpr;
+            gCanvas.height = rect.height * dpr;
+            gCtx.scale(dpr, dpr);
+        }
+        resizeG();
+        window.addEventListener('resize', resizeG);
+
+        function renderG() {
+            const rect = gCanvas.getBoundingClientRect();
+            const w = rect.width, h = rect.height;
+            gCtx.clearRect(0, 0, w, h);
+            const gs = 60;
+            for (let x = 0; x < w; x += gs) {
+                for (let y = 0; y < h; y += gs) {
+                    const wave = Math.sin(x * 0.008 + y * 0.008 + gTime) * 0.5 + 0.5;
+                    const sz = 1 + wave * 2;
+                    gCtx.beginPath();
+                    gCtx.arc(x, y, sz, 0, Math.PI * 2);
+                    gCtx.fillStyle = `rgba(14, 165, 255, 0.035)`;
+                    gCtx.fill();
+                }
+            }
+            gTime += 0.015;
+            requestAnimationFrame(renderG);
+        }
+        renderG();
+    }
+
+    // ============================================================
+    // DOT GRAPH CANVASES (Metrics)
+    // ============================================================
+    function initDotGraph(id, color, opts = {}) {
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const {
+            freq1 = 0.35, freq2 = 0.12, freqT = 0.7,
+            speed = 0.025, baseline = 0.3, amplitude = 0.5,
+            height = 40
+        } = opts;
+        let t = Math.random() * 100;
+
+        function resize() {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const W = canvas.offsetWidth || 300;
+            canvas.width = W * dpr;
+            canvas.height = height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        function render() {
+            const W = canvas.offsetWidth || 300;
+            const H = height;
+            ctx.clearRect(0, 0, W, H);
+            const cols = Math.floor(W / 8);
+            for (let i = 0; i < cols; i++) {
+                const raw = baseline + amplitude * Math.sin(i * freq1 + t) * Math.cos(i * freq2 + t * freqT);
+                const v = Math.max(0, Math.min(1, raw));
+                const dotY = H - 4 - v * (H - 8);
+                const x = i * 8 + 4;
+                const alpha = 0.15 + v * 0.55;
+                const r = 1.5 + v * 1.2;
+                ctx.beginPath();
+                ctx.arc(x, dotY, r, 0, Math.PI * 2);
+                ctx.fillStyle = color.replace('$a', alpha);
+                ctx.fill();
+            }
+            t += speed;
+            requestAnimationFrame(render);
+        }
+        render();
+    }
+
+    initDotGraph('dot-graph-1', 'rgba(14,165,255,$a)', { height:40, freq1:0.28, freq2:0.09, freqT:0.5, speed:0.018, baseline:0.35, amplitude:0.55 });
+    initDotGraph('dot-graph-2', 'rgba(6,182,212,$a)', { height:28, freq1:0.45, freq2:0.18, freqT:1.1, speed:0.032, baseline:0.4, amplitude:0.45 });
+    initDotGraph('dot-graph-3', 'rgba(124,58,237,$a)', { height:28, freq1:0.22, freq2:0.07, freqT:0.4, speed:0.015, baseline:0.25, amplitude:0.6 });
+
+    // ============================================================
+    // ANIMATED COUNTER NUMBERS
+    // ============================================================
+    function animateCounter(el) {
+        const target = parseInt(el.dataset.counter);
+        const suffix = el.dataset.suffix || '';
+        const duration = 2200;
+        const start = performance.now();
+        const tick = (now) => {
+            const progress = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 4);
+            const val = Math.floor(eased * target);
+            el.textContent = val.toLocaleString() + (progress >= 1 ? suffix : '');
+            if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+    }
+
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.animated) {
+                entry.target.dataset.animated = '1';
+                animateCounter(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-counter]').forEach(el => counterObserver.observe(el));
+
+    // ============================================================
+    // LIVE TIME DISPLAY
+    // ============================================================
+    const timeEl = document.getElementById('live-time');
+    if (timeEl) {
+        function tick() { timeEl.textContent = new Date().toLocaleTimeString('en-GB') + ' UTC'; }
+        tick();
+        setInterval(tick, 1000);
+    }
+
+    // ============================================================
+    // CTA SPOTLIGHT
+    // ============================================================
+    const ctaBox = document.getElementById('cta-box');
+    const ctaSpot = document.getElementById('cta-spotlight');
+    window.ctaMouseMove = function(e, el) {
+        if (!ctaSpot) return;
+        const rect = el.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        ctaSpot.style.opacity = '1';
+        ctaSpot.style.background = `radial-gradient(500px circle at ${x}% ${y}%, rgba(14,165,255,0.06), transparent 50%)`;
+    };
+    if (ctaBox) {
+        ctaBox.addEventListener('mouseleave', () => {
+            if (ctaSpot) ctaSpot.style.opacity = '0';
+        });
+    }
+
+})();
+</script>
 
 </body>
 </html>
