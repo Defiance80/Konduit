@@ -52,7 +52,9 @@ class ClientController extends Controller
             'tickets'  => fn($q) => $q->latest()->limit(5),
         ]);
 
-        return view('agency.clients.show', compact('client'));
+        $aiSummary = $client->aiSummaries()->latest()->first();
+
+        return view('agency.clients.show', compact('client', 'aiSummary'));
     }
 
     public function edit(Client $client): View

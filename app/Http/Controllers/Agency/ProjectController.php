@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\Retainer;
+use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -61,9 +62,11 @@ class ProjectController extends Controller
 
     public function show(Project $project): View
     {
-        $project->load(['client', 'retainer', 'owner', 'tickets', 'deliverables']);
+        $project->load(['client', 'retainer', 'owner', 'tickets', 'deliverables', 'tasks.assignee']);
 
-        return view('agency.projects.show', compact('project'));
+        $aiSummary = $project->aiSummaries()->latest()->first();
+
+        return view('agency.projects.show', compact('project', 'aiSummary'));
     }
 
     public function edit(Project $project): View

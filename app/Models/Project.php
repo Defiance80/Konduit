@@ -56,6 +56,11 @@ class Project extends Model
         return $this->hasMany(Deliverable::class);
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->whereNull('parent_task_id');
+    }
+
     public function aiSummaries(): MorphMany
     {
         return $this->morphMany(AiSummary::class, 'summarizable');

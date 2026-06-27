@@ -6,6 +6,7 @@ use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Client extends Model
 {
@@ -48,6 +49,11 @@ class Client extends Model
     public function deliverables(): HasMany
     {
         return $this->hasMany(Deliverable::class);
+    }
+
+    public function aiSummaries(): MorphMany
+    {
+        return $this->morphMany(AiSummary::class, 'summarizable');
     }
 
     public function activeRetainer(): ?Retainer
