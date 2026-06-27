@@ -33,6 +33,17 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureAgencyUser::class])
         Route::resource('projects', Agency\ProjectController::class)->names('projects');
         Route::resource('tickets', Agency\TicketController::class)->names('tickets');
         Route::post('/tickets/{ticket}/comment', [Agency\TicketController::class, 'comment'])->name('tickets.comment');
+
+        // Team
+        Route::get('/team', [Agency\TeamController::class, 'index'])->name('team.index');
+        Route::post('/team/invite', [Agency\TeamController::class, 'invite'])->name('team.invite');
+        Route::delete('/team/{user}', [Agency\TeamController::class, 'destroy'])->name('team.destroy');
+
+        // Settings
+        Route::get('/settings', [Agency\SettingsController::class, 'index'])->name('settings.index');
+        Route::patch('/settings/agency', [Agency\SettingsController::class, 'updateAgency'])->name('settings.agency');
+        Route::patch('/settings/profile', [Agency\SettingsController::class, 'updateProfile'])->name('settings.profile');
+        Route::patch('/settings/password', [Agency\SettingsController::class, 'updatePassword'])->name('settings.password');
     });
 
 // Client Portal
