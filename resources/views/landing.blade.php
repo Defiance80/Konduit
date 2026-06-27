@@ -584,7 +584,7 @@
 
         {{-- Bottom ticker --}}
         <div class="mt-14 pt-8 border-t border-white/8 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm font-mono text-[#A1A1AA]" data-reveal>
-            @foreach(['GA4', 'Google Search Console', 'HubSpot', 'Shopify', 'Stripe', 'Slack', 'Figma', 'ClickUp']) as $tool)
+            @foreach(['GA4', 'Google Search Console', 'HubSpot', 'Shopify', 'Stripe', 'Slack', 'Figma', 'ClickUp'] as $tool)
             <span>{{ $tool }}</span>
             @endforeach
             <span class="text-[#0EA5FF]">+20 integrations</span>
@@ -623,7 +623,7 @@
                     <p class="text-sm text-[#A1A1AA] mt-1">Everything your team needs to run accounts, close the loop, and stay ahead.</p>
                 </div>
                 <div class="p-8 space-y-3">
-                    @foreach(['Executive dashboard with live KPIs & risk signals','Client health scores and retention intelligence','Project progress, budget burn & milestone tracking','AI-classified ticket management and routing','Retainer billing, service tracking, and capacity view','Team workload and capacity forecasting','AI-generated internal and client-facing reports']) as $item)
+                    @foreach(['Executive dashboard with live KPIs & risk signals','Client health scores and retention intelligence','Project progress, budget burn & milestone tracking','AI-classified ticket management and routing','Retainer billing, service tracking, and capacity view','Team workload and capacity forecasting','AI-generated internal and client-facing reports'] as $item)
                     <div class="flex items-center gap-3 text-sm text-[#A1A1AA]">
                         <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#0EA5FF" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         {{ $item }}
@@ -647,7 +647,7 @@
                     <p class="text-sm text-[#A1A1AA] mt-1">A clean, jargon-free window into their work. No access to your internals.</p>
                 </div>
                 <div class="p-8 space-y-3">
-                    @foreach(['Project progress in plain, non-technical language','Budget and retainer status at a glance','Ticket submission and real-time status tracking','Deliverable review, feedback, and approvals','AI-generated monthly performance reports','Internal notes and team discussions never visible','Every metric explained simply — no jargon']) as $item)
+                    @foreach(['Project progress in plain, non-technical language','Budget and retainer status at a glance','Ticket submission and real-time status tracking','Deliverable review, feedback, and approvals','AI-generated monthly performance reports','Internal notes and team discussions never visible','Every metric explained simply — no jargon'] as $item)
                     <div class="flex items-center gap-3 text-sm text-[#A1A1AA]">
                         <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#06B6D4" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         {{ $item }}
@@ -816,7 +816,7 @@
                     The Agency Intelligence Platform. We bring clarity to complexity, empower teams, and drive measurable growth.
                 </p>
                 <div class="flex gap-5">
-                    @foreach(['Twitter','LinkedIn','GitHub']) as $s)
+                    @foreach(['Twitter','LinkedIn','GitHub'] as $s)
                     <a href="#" class="text-sm text-white/40 hover:text-white transition-colors">{{ $s }}</a>
                     @endforeach
                 </div>
