@@ -172,9 +172,18 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureAgencyUser::class])
         Route::get('/news', [Agency\NewsBriefController::class, 'index'])->name('news.index');
         Route::post('/news/refresh', [Agency\NewsBriefController::class, 'refresh'])->name('news.refresh');
 
-        // Training Academy
+        // Training Academy — static routes BEFORE parameterized ones
         Route::get('/training', [Agency\TrainingController::class, 'index'])->name('training.index');
+        Route::get('/training/create-curriculum', [Agency\TrainingController::class, 'createCurriculum'])->name('training.create-curriculum');
+        Route::post('/training/curricula', [Agency\TrainingController::class, 'storeCurriculum'])->name('training.curricula.store');
+        Route::get('/training/create', [Agency\TrainingController::class, 'createCourse'])->name('training.create');
+        Route::post('/training', [Agency\TrainingController::class, 'storeCourse'])->name('training.store');
         Route::get('/training/{trainingCourse}', [Agency\TrainingController::class, 'show'])->name('training.show');
+        Route::delete('/training/{trainingCourse}', [Agency\TrainingController::class, 'destroyCourse'])->name('training.destroy');
+        Route::post('/training/{trainingCourse}/assign', [Agency\TrainingController::class, 'storeAssignment'])->name('training.assign');
+        Route::delete('/training/{trainingCourse}/assign/{user}', [Agency\TrainingController::class, 'removeAssignment'])->name('training.assign.remove');
+        Route::get('/training/{trainingCourse}/lessons/create', [Agency\TrainingController::class, 'createLesson'])->name('training.lessons.create');
+        Route::post('/training/{trainingCourse}/lessons', [Agency\TrainingController::class, 'storeLesson'])->name('training.lessons.store');
         Route::get('/training/{trainingCourse}/lessons/{trainingLesson}', [Agency\TrainingController::class, 'lesson'])->name('training.lesson');
         Route::post('/training/{trainingCourse}/lessons/{trainingLesson}/complete', [Agency\TrainingController::class, 'complete'])->name('training.complete');
     });

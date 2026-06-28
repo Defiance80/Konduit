@@ -3,18 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TrainingCourse extends Model
 {
     protected $fillable = [
-        'tenant_id', 'title', 'description', 'category',
+        'tenant_id', 'curriculum_id', 'title', 'description', 'category',
         'difficulty', 'estimated_minutes', 'is_published', 'sort_order',
     ];
 
-    protected $casts = [
-        'is_published' => 'boolean',
-    ];
+    protected $casts = ['is_published' => 'boolean'];
+
+    public function curriculum(): BelongsTo
+    {
+        return $this->belongsTo(TrainingCurriculum::class, 'curriculum_id');
+    }
 
     public function lessons(): HasMany
     {
@@ -26,18 +30,25 @@ class TrainingCourse extends Model
         return $this->hasMany(TrainingCompletion::class, 'course_id');
     }
 
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(TrainingAssignment::class, 'course_id');
+    }
+
     public function progressForUser(int $userId): int
     {
         $total = $this->lessons()->count();
         if ($total === 0) {
             return 0;
         }
-
-        $completed = TrainingCompletion::where('course_id', $this->id)
-            ->where('user_id', $userId)
-            ->count();
+        $completed = TrainingCompletion::where('course_id', $this->id)->where('user_id', $userId)->count();
 
         return (int) round(($completed / $total) * 100);
+    }
+
+    public function isAssignedToUser(int $userId): bool
+    {
+        return TrainingAssignment::where('course_id', $this->id)->where('user_id', $userId)->exists();
     }
 
     public function getDifficultyColorAttribute(): string
@@ -52,6 +63,10 @@ class TrainingCourse extends Model
 
     public function getCategoryLabelAttribute(): string
     {
+        if ($this->curriculum) {
+            return $this->curriculum->title;
+        }
+
         return match ($this->category) {
             'agency_ops'  => 'Agency Operations',
             'marketing'   => 'Marketing Strategy',
