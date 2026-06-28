@@ -38,10 +38,11 @@ class TrainingController extends Controller
         $grouped = $courses->groupBy('category');
 
         $categoryOrder = ['platform', 'agency_ops', 'marketing', 'client_mgmt', 'ai_tools'];
+        $groupedBase   = collect($grouped); // cast to base Collection so ->except() uses string keys
         $grouped = collect($categoryOrder)
-            ->filter(fn ($k) => $grouped->has($k))
-            ->mapWithKeys(fn ($k) => [$k => $grouped[$k]])
-            ->merge($grouped->except($categoryOrder));
+            ->filter(fn ($k) => $groupedBase->has($k))
+            ->mapWithKeys(fn ($k) => [$k => $groupedBase[$k]])
+            ->merge($groupedBase->except($categoryOrder));
 
         return view('agency.training.index', compact(
             'courses', 'grouped', 'overallProgress', 'completedLessons', 'totalLessons'

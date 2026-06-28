@@ -37,7 +37,7 @@
                 <h2 class="font-semibold text-gray-900 dark:text-white">Revenue Forecast — Next 3 Months</h2>
             </div>
             <div class="px-6 py-6">
-                @php $maxVal = max(array_column($revenue['months'], 'total'), 1); @endphp
+                @php $maxVal = max(array_merge(array_column($revenue['months'], 'total'), [1])); @endphp
                 <div class="flex items-end gap-4 h-40">
                     @foreach($revenue['months'] as $month)
                     @php $pct = max(4, round(($month['total'] / $maxVal) * 100)); @endphp
