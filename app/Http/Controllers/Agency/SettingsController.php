@@ -70,6 +70,33 @@ class SettingsController extends Controller
         return back()->with('success', 'Password updated.');
     }
 
+    public function updateDashboard(Request $request)
+    {
+        $tenant = auth()->user()->tenant;
+        if (!$tenant) abort(403, 'No agency tenant associated with this account.');
+
+        $request->validate([
+            'news_focus_keywords' => 'nullable|string|max:300',
+            'news_categories'     => 'nullable|array',
+            'news_categories.*'   => 'in:trend,platform,industry,tip',
+            'show_news_carousel'  => 'nullable|boolean',
+        ]);
+
+        $data = $tenant->data ?? [];
+        $data['dashboard'] = [
+            'news_focus_keywords' => $request->input('news_focus_keywords', ''),
+            'news_categories'     => $request->input('news_categories', ['trend', 'platform', 'industry', 'tip']),
+            'show_news_carousel'  => $request->boolean('show_news_carousel', true),
+        ];
+
+        $tenant->update(['data' => $data]);
+
+        // Bust news brief cache so next load re-generates with new preferences
+        \Cache::forget("news_brief_{$tenant->id}_" . now()->format('Y-m-d'));
+
+        return back()->with('success', 'Dashboard preferences saved. News feed will refresh on your next visit.');
+    }
+
     public function integrations()
     {
         $tenant = auth()->user()->tenant;

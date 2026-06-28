@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\Ticket;
-use App\Models\Retainer;
 use App\Models\TrainingCourse;
 use App\Models\TrainingCompletion;
 use App\Services\NewsBriefService;
@@ -21,10 +21,10 @@ class DashboardController extends Controller
         $tenantId = $user->tenant_id;
 
         $stats = [
-            'clients'          => Client::count(),
-            'active_projects'  => Project::where('status', 'active')->count(),
-            'open_tickets'     => Ticket::whereIn('status', ['open', 'in_progress'])->count(),
-            'active_retainers' => Retainer::where('status', 'active')->count(),
+            'clients'         => Client::count(),
+            'active_projects' => Project::where('status', 'active')->count(),
+            'open_tickets'    => Ticket::whereIn('status', ['open', 'in_progress'])->count(),
+            'tasks_due_today' => Task::whereDate('due_date', today())->whereNull('completed_at')->count(),
         ];
 
         $recentTickets = Ticket::with(['client', 'assignee'])
@@ -33,35 +33,34 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $activeProjects = Project::with(['client', 'owner'])
+        $recentProjects = Project::with(['client', 'owner'])
             ->where('status', 'active')
             ->orderBy('due_date')
             ->limit(6)
             ->get();
 
-        $recentClients = Client::latest()->limit(5)->get();
+        $recentClients = Client::with('retainers')->latest()->limit(5)->get();
 
         // News brief (cached 20h, falls back to default if AI unavailable)
         $newsBrief = $newsBriefService->getBrief($tenantId ?? '');
 
-        // Training progress summary
-        $trainingCourses = TrainingCourse::forTenant($tenantId)
+        // Featured courses for dashboard widget (first 3)
+        $featuredCourses = TrainingCourse::forTenant($tenantId)
             ->where('is_published', true)
             ->withCount('lessons')
             ->orderBy('sort_order')
             ->limit(3)
-            ->get()
-            ->each(function (TrainingCourse $c) use ($user) {
-                $c->user_progress = $c->progressForUser($user->id);
-            });
+            ->get();
 
-        $totalLessons     = TrainingCourse::forTenant($tenantId)->withCount('lessons')->get()->sum('lessons_count');
-        $completedLessons = TrainingCompletion::where('user_id', $user->id)->count();
-        $trainingProgress = $totalLessons > 0 ? (int) round(($completedLessons / $totalLessons) * 100) : 0;
+        // Build progress map: course_id => progress%
+        $trainingProgress = [];
+        foreach ($featuredCourses as $course) {
+            $trainingProgress[$course->id] = $course->progressForUser($user->id);
+        }
 
         return view('agency.dashboard', compact(
-            'stats', 'recentTickets', 'activeProjects', 'recentClients',
-            'newsBrief', 'trainingCourses', 'trainingProgress', 'completedLessons', 'totalLessons'
+            'stats', 'recentTickets', 'recentProjects', 'recentClients',
+            'newsBrief', 'featuredCourses', 'trainingProgress'
         ));
     }
 }

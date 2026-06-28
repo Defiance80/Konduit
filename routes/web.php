@@ -45,6 +45,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureAgencyUser::class])
         Route::patch('/settings/agency', [Agency\SettingsController::class, 'updateAgency'])->name('settings.agency');
         Route::patch('/settings/profile', [Agency\SettingsController::class, 'updateProfile'])->name('settings.profile');
         Route::patch('/settings/password', [Agency\SettingsController::class, 'updatePassword'])->name('settings.password');
+        Route::patch('/settings/dashboard', [Agency\SettingsController::class, 'updateDashboard'])->name('settings.dashboard');
         Route::get('/settings/integrations', [Agency\SettingsController::class, 'integrations'])->name('settings.integrations');
         Route::post('/settings/integrations/{service}', [Agency\SettingsController::class, 'saveIntegration'])->name('settings.integrations.save');
         Route::delete('/settings/integrations/{service}', [Agency\SettingsController::class, 'removeIntegration'])->name('settings.integrations.remove');

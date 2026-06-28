@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Client;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -28,6 +29,9 @@ class NewsBriefService
     private function generate(string $tenantId): array
     {
         try {
+            $tenant = Tenant::find($tenantId);
+            $dashSettings = $tenant?->data['dashboard'] ?? [];
+
             $industries = Client::where('tenant_id', $tenantId)
                 ->whereNotNull('industry')
                 ->pluck('industry')
@@ -38,6 +42,14 @@ class NewsBriefService
             $context = $industries
                 ? "Their clients are primarily in: {$industries}."
                 : 'They serve various businesses across industries.';
+
+            $focusKeywords = trim($dashSettings['news_focus_keywords'] ?? '');
+            if ($focusKeywords) {
+                $context .= " Place extra emphasis on topics related to: {$focusKeywords}.";
+            }
+
+            $allowedTypes = $dashSettings['news_categories'] ?? ['trend', 'platform', 'industry', 'tip'];
+            $typeList = implode(', ', $allowedTypes);
 
             $response = Http::withHeaders([
                 'x-api-key'         => config('services.anthropic.key'),
@@ -55,7 +67,7 @@ Generate a morning intelligence brief with 6 curated items. Return ONLY a valid 
   \"generated_at\": \"" . now()->format('F j, Y') . "\",
   \"items\": [
     {
-      \"type\": \"trend|platform|tip|industry\",
+      \"type\": \"{$typeList}\",
       \"category\": \"SEO|Social Media|Paid Ads|Content|Email|Analytics|Agency\",
       \"headline\": \"short compelling headline under 80 characters\",
       \"summary\": \"2 sentence explanation of what happened and why it matters\",
