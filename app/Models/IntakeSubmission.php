@@ -11,13 +11,15 @@ class IntakeSubmission extends Model
     use BelongsToTenant;
 
     protected $fillable = [
-        'tenant_id', 'client_id', 'ticket_id', 'name', 'email',
-        'company', 'website_url', 'issue_type', 'description', 'priority',
-        'ai_classification', 'ai_summary', 'ai_client_message', 'status',
+        'tenant_id', 'client_id', 'ticket_id', 'name', 'email', 'company',
+        'address', 'contact_person', 'website_url', 'issue_type', 'description',
+        'retainer_range', 'project_goals', 'services_interested',
+        'priority', 'ai_classification', 'ai_summary', 'ai_client_message', 'status',
     ];
 
     protected $casts = [
-        'ai_classification' => 'array',
+        'ai_classification'  => 'array',
+        'services_interested' => 'array',
     ];
 
     public function client(): BelongsTo

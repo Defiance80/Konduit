@@ -23,12 +23,17 @@ class IntakeController extends Controller
     public function store(Request $request, Tenant $tenant, IntakeAiService $ai): \Illuminate\View\View|\Illuminate\Http\RedirectResponse
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:100',
-            'email'       => 'required|email|max:255',
-            'company'     => 'nullable|string|max:255',
-            'website_url' => 'nullable|url|max:500',
-            'issue_type'  => 'required|in:bug,feature,content,question,billing,emergency,general',
-            'description' => 'required|string|min:10|max:5000',
+            'name'                => 'required|string|max:100',
+            'email'               => 'required|email|max:255',
+            'company'             => 'nullable|string|max:255',
+            'address'             => 'nullable|string|max:255',
+            'contact_person'      => 'nullable|string|max:100',
+            'website_url'         => 'nullable|url|max:500',
+            'issue_type'          => 'required|in:bug,feature,content,question,billing,emergency,general',
+            'services_interested' => 'nullable|array',
+            'retainer_range'      => 'nullable|string|max:50',
+            'description'         => 'required|string|min:10|max:5000',
+            'project_goals'       => 'nullable|string|max:2000',
         ]);
 
         // AI classification
@@ -92,20 +97,25 @@ class IntakeController extends Controller
 
         // Save intake submission
         $submission = IntakeSubmission::create([
-            'tenant_id'         => $tenant->id,
-            'client_id'         => $client?->id,
-            'ticket_id'         => $ticket->id,
-            'name'              => $data['name'],
-            'email'             => $data['email'],
-            'company'           => $data['company'] ?? null,
-            'website_url'       => $data['website_url'] ?? null,
-            'issue_type'        => $data['issue_type'],
-            'description'       => $data['description'],
-            'priority'          => $classification['priority'] ?? 'medium',
-            'ai_classification' => $classification,
-            'ai_summary'        => $classification['internal_summary'] ?? null,
-            'ai_client_message' => $classification['client_message'] ?? null,
-            'status'            => 'complete',
+            'tenant_id'          => $tenant->id,
+            'client_id'          => $client?->id,
+            'ticket_id'          => $ticket->id,
+            'name'               => $data['name'],
+            'email'              => $data['email'],
+            'company'            => $data['company'] ?? null,
+            'address'            => $data['address'] ?? null,
+            'contact_person'     => $data['contact_person'] ?? null,
+            'website_url'        => $data['website_url'] ?? null,
+            'issue_type'         => $data['issue_type'],
+            'services_interested' => $data['services_interested'] ?? null,
+            'retainer_range'     => $data['retainer_range'] ?? null,
+            'description'        => $data['description'],
+            'project_goals'      => $data['project_goals'] ?? null,
+            'priority'           => $classification['priority'] ?? 'medium',
+            'ai_classification'  => $classification,
+            'ai_summary'         => $classification['internal_summary'] ?? null,
+            'ai_client_message'  => $classification['client_message'] ?? null,
+            'status'             => 'complete',
         ]);
 
         // Update ticket with internal AI notes
@@ -115,7 +125,7 @@ class IntakeController extends Controller
 
         // Notify agency team (agency admins)
         $agencyAdmins = User::where('tenant_id', $tenant->id)
-            ->whereIn('type', ['agency_admin', 'agency_user'])
+            ->whereIn('user_type', ['super_admin', 'agency_user'])
             ->get();
 
         foreach ($agencyAdmins as $admin) {

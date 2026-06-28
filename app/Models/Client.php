@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Client extends Model
 {
@@ -15,10 +16,13 @@ class Client extends Model
     protected $fillable = [
         'tenant_id', 'name', 'slug', 'email', 'phone', 'website',
         'industry', 'logo', 'notes', 'status', 'health_score',
+        'address', 'contact_person', 'contact_person_email', 'contact_person_phone',
+        'services_interested',
     ];
 
     protected $casts = [
-        'health_score' => 'decimal:2',
+        'health_score'       => 'decimal:2',
+        'services_interested' => 'array',
     ];
 
     public function tenant(): BelongsTo
@@ -49,6 +53,21 @@ class Client extends Model
     public function deliverables(): HasMany
     {
         return $this->hasMany(Deliverable::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(ClientDocument::class);
+    }
+
+    public function healthScore(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ClientHealthScore::class);
     }
 
     public function aiSummaries(): MorphMany

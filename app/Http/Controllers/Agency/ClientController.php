@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\ClientHealthScore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,6 +15,7 @@ class ClientController extends Controller
     public function index(): View
     {
         $clients = Client::withCount(['projects', 'tickets'])
+            ->with(['retainers' => fn($q) => $q->where('status', 'active'), 'healthScore'])
             ->latest()
             ->paginate(12);
 
@@ -28,15 +30,20 @@ class ClientController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['nullable', 'email', 'max:255'],
-            'phone'    => ['nullable', 'string', 'max:50'],
-            'website'  => ['nullable', 'url', 'max:255'],
-            'industry' => ['nullable', 'string', 'max:100'],
-            'notes'    => ['nullable', 'string'],
+            'name'                  => ['required', 'string', 'max:255'],
+            'email'                 => ['nullable', 'email', 'max:255'],
+            'phone'                 => ['nullable', 'string', 'max:50'],
+            'website'               => ['nullable', 'url', 'max:255'],
+            'industry'              => ['nullable', 'string', 'max:100'],
+            'address'               => ['nullable', 'string', 'max:255'],
+            'contact_person'        => ['nullable', 'string', 'max:100'],
+            'contact_person_email'  => ['nullable', 'email', 'max:255'],
+            'contact_person_phone'  => ['nullable', 'string', 'max:50'],
+            'services_interested'   => ['nullable', 'array'],
+            'notes'                 => ['nullable', 'string'],
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(4);
 
         Client::create($validated);
 
@@ -48,13 +55,23 @@ class ClientController extends Controller
     {
         $client->load([
             'retainers',
-            'projects' => fn($q) => $q->latest()->limit(5),
-            'tickets'  => fn($q) => $q->latest()->limit(5),
+            'projects'  => fn($q) => $q->with('client')->orderByDesc('created_at'),
+            'tickets'   => fn($q) => $q->orderByDesc('created_at')->limit(10),
+            'invoices'  => fn($q) => $q->orderByDesc('created_at')->limit(10),
+            'documents' => fn($q) => $q->with('uploader')->latest(),
+            'healthScore',
         ]);
 
-        $aiSummary = $client->aiSummaries()->latest()->first();
+        $aiSummary  = $client->aiSummaries()->latest()->first();
+        $retainer   = $client->retainers->where('status', 'active')->first();
+        $deliverables = \App\Models\Deliverable::where('client_id', $client->id)
+            ->whereIn('status', ['pending_approval', 'in_review'])
+            ->with('project')
+            ->latest()
+            ->limit(5)
+            ->get();
 
-        return view('agency.clients.show', compact('client', 'aiSummary'));
+        return view('agency.clients.show', compact('client', 'aiSummary', 'retainer', 'deliverables'));
     }
 
     public function edit(Client $client): View
@@ -65,13 +82,18 @@ class ClientController extends Controller
     public function update(Request $request, Client $client): RedirectResponse
     {
         $validated = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['nullable', 'email'],
-            'phone'    => ['nullable', 'string', 'max:50'],
-            'website'  => ['nullable', 'url'],
-            'industry' => ['nullable', 'string', 'max:100'],
-            'status'   => ['required', 'in:active,inactive,prospect'],
-            'notes'    => ['nullable', 'string'],
+            'name'                  => ['required', 'string', 'max:255'],
+            'email'                 => ['nullable', 'email'],
+            'phone'                 => ['nullable', 'string', 'max:50'],
+            'website'               => ['nullable', 'url'],
+            'industry'              => ['nullable', 'string', 'max:100'],
+            'status'                => ['required', 'in:active,inactive,prospect'],
+            'address'               => ['nullable', 'string', 'max:255'],
+            'contact_person'        => ['nullable', 'string', 'max:100'],
+            'contact_person_email'  => ['nullable', 'email', 'max:255'],
+            'contact_person_phone'  => ['nullable', 'string', 'max:50'],
+            'services_interested'   => ['nullable', 'array'],
+            'notes'                 => ['nullable', 'string'],
         ]);
 
         $client->update($validated);

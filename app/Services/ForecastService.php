@@ -49,7 +49,7 @@ class ForecastService
     public function capacityProjection(string $tenantId): array
     {
         $members = User::where('tenant_id', $tenantId)
-            ->where('type', 'agency_user')
+            ->where('user_type', 'agency_user')
             ->with(['tasks' => fn ($q) => $q->where('status', '!=', 'done')])
             ->get();
 

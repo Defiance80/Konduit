@@ -20,13 +20,16 @@ class ExecutiveDashboardController extends Controller
 {
     public function generateBrief(StrategyIntelligenceService $strategy): \Illuminate\Http\RedirectResponse
     {
-        $strategy->getAgencyBrief(Auth::user()->tenant_id, forceRefresh: true);
+        $tenantId = Auth::user()->tenant_id;
+        if (!$tenantId) return back()->with('error', 'No agency tenant on this account.');
+        $strategy->getAgencyBrief($tenantId, forceRefresh: true);
         return back()->with('success', 'Agency brief regenerated.');
     }
 
     public function index(ForecastService $forecast, RelationshipIntelligenceService $rel, StrategyIntelligenceService $strategy): \Illuminate\View\View
     {
         $tenantId = Auth::user()->tenant_id;
+        if (!$tenantId) abort(403, 'No agency tenant associated with this account.');
 
         // Recalculate relationship scores on each load (fast enough for dashboard)
         $rel->calculateForTenant($tenantId);
@@ -72,7 +75,7 @@ class ExecutiveDashboardController extends Controller
 
         // Team member count
         $teamCount = User::where('tenant_id', $tenantId)
-            ->where('type', 'agency_user')
+            ->where('user_type', 'agency_user')
             ->count();
 
         // Outstanding invoices

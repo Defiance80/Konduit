@@ -45,6 +45,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureAgencyUser::class])
         Route::patch('/settings/agency', [Agency\SettingsController::class, 'updateAgency'])->name('settings.agency');
         Route::patch('/settings/profile', [Agency\SettingsController::class, 'updateProfile'])->name('settings.profile');
         Route::patch('/settings/password', [Agency\SettingsController::class, 'updatePassword'])->name('settings.password');
+        Route::get('/settings/integrations', [Agency\SettingsController::class, 'integrations'])->name('settings.integrations');
+        Route::post('/settings/integrations/{service}', [Agency\SettingsController::class, 'saveIntegration'])->name('settings.integrations.save');
+        Route::delete('/settings/integrations/{service}', [Agency\SettingsController::class, 'removeIntegration'])->name('settings.integrations.remove');
 
         // Deliverables
         Route::get('/deliverables', [Agency\DeliverableController::class, 'index'])->name('deliverables.index');
@@ -96,6 +99,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureAgencyUser::class])
         Route::post('/audits/{audit}/findings', [Agency\AuditController::class, 'addFinding'])->name('audits.findings.store');
         Route::post('/audits/{audit}/recommendations', [Agency\AuditController::class, 'addRecommendation'])->name('audits.recommendations.store');
         Route::patch('/audits/{audit}/share', [Agency\AuditController::class, 'share'])->name('audits.share');
+        Route::get('/audits/{audit}/scan', [Agency\AuditController::class, 'runScan'])->name('audits.scan');
 
         // Messages
         Route::get('/messages', [Agency\MessageController::class, 'index'])->name('messages.index');
@@ -109,6 +113,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureAgencyUser::class])
         // AI Summaries
         Route::post('/projects/{project}/ai-summary', [Agency\AiSummaryController::class, 'generateProject'])->name('projects.ai-summary');
         Route::post('/clients/{client}/ai-summary', [Agency\AiSummaryController::class, 'generateClient'])->name('clients.ai-summary');
+
+        // Client documents
+        Route::post('/clients/{client}/documents', [Agency\ClientDocumentController::class, 'store'])->name('clients.documents.store');
+        Route::get('/clients/{client}/documents/{document}/download', [Agency\ClientDocumentController::class, 'download'])->name('clients.documents.download');
+        Route::delete('/clients/{client}/documents/{document}', [Agency\ClientDocumentController::class, 'destroy'])->name('clients.documents.destroy');
         Route::patch('/ai-summaries/{summary}/toggle-visible', [Agency\AiSummaryController::class, 'toggleClientVisible'])->name('ai-summaries.toggle-visible');
         Route::delete('/ai-summaries/{summary}', [Agency\AiSummaryController::class, 'destroy'])->name('ai-summaries.destroy');
 

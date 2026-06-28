@@ -10,7 +10,8 @@ class ForecastController extends Controller
 {
     public function index(ForecastService $service): \Illuminate\View\View
     {
-        $tenantId  = Auth::user()->tenant_id;
+        $tenantId = Auth::user()->tenant_id;
+        if (!$tenantId) abort(403, 'No agency tenant associated with this account.');
         $revenue   = $service->revenueProjection($tenantId);
         $capacity  = $service->capacityProjection($tenantId);
         $deadlines = $service->upcomingDeadlines($tenantId);

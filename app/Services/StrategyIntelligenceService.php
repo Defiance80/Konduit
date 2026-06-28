@@ -35,7 +35,7 @@ class StrategyIntelligenceService
             $mrr          = Retainer::where('tenant_id', $tenantId)->where('status', 'active')->sum('monthly_value');
             $activeProjects = Project::where('tenant_id', $tenantId)->where('status', 'active')->count();
             $overdueInvoices = Invoice::where('tenant_id', $tenantId)->where('status', 'overdue')->count();
-            $teamCount    = User::where('tenant_id', $tenantId)->where('type', 'agency_user')->count();
+            $teamCount    = User::where('tenant_id', $tenantId)->where('user_type', 'agency_user')->count();
 
             $atRisk = Project::where('tenant_id', $tenantId)
                 ->where('status', 'active')

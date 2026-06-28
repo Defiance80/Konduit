@@ -12,15 +12,18 @@ class Audit extends Model
 
     protected $fillable = [
         'tenant_id', 'client_id', 'project_id', 'conducted_by', 'title', 'type',
-        'status', 'score', 'findings', 'recommendations', 'ai_analysis',
+        'website_url', 'status', 'score', 'category_scores', 'scan_data',
+        'findings', 'recommendations', 'ai_analysis',
         'executive_summary', 'visible_to_client', 'audited_at',
     ];
 
     protected $casts = [
-        'findings'         => 'array',
-        'recommendations'  => 'array',
-        'visible_to_client'=> 'boolean',
-        'audited_at'       => 'date',
+        'findings'          => 'array',
+        'recommendations'   => 'array',
+        'category_scores'   => 'array',
+        'scan_data'         => 'array',
+        'visible_to_client' => 'boolean',
+        'audited_at'        => 'date',
     ];
 
     public function client(): BelongsTo      { return $this->belongsTo(Client::class); }
@@ -34,6 +37,19 @@ class Audit extends Model
             $this->score >= 80 => 'success',
             $this->score >= 60 => 'warning',
             default            => 'error',
+        };
+    }
+
+    public function getScoreGradeAttribute(): string
+    {
+        if ($this->score === null) return '—';
+        return match (true) {
+            $this->score >= 90 => 'A+',
+            $this->score >= 80 => 'A',
+            $this->score >= 70 => 'B',
+            $this->score >= 60 => 'C',
+            $this->score >= 50 => 'D',
+            default            => 'F',
         };
     }
 

@@ -21,6 +21,11 @@ class EnsureAgencyUser
             return redirect()->route('client.dashboard');
         }
 
+        if (! $user->tenant_id) {
+            return redirect()->route('login')
+                ->with('error', 'This account has no agency tenant assigned. Contact your administrator.');
+        }
+
         return $next($request);
     }
 }
