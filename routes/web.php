@@ -167,6 +167,16 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureAgencyUser::class])
         Route::get('/knowledge-base/{knowledgeBase}/edit', [Agency\KnowledgeBaseController::class, 'edit'])->name('knowledge-base.edit');
         Route::put('/knowledge-base/{knowledgeBase}', [Agency\KnowledgeBaseController::class, 'update'])->name('knowledge-base.update');
         Route::delete('/knowledge-base/{knowledgeBase}', [Agency\KnowledgeBaseController::class, 'destroy'])->name('knowledge-base.destroy');
+
+        // Marketing Intelligence News Feed
+        Route::get('/news', [Agency\NewsBriefController::class, 'index'])->name('news.index');
+        Route::post('/news/refresh', [Agency\NewsBriefController::class, 'refresh'])->name('news.refresh');
+
+        // Training Academy
+        Route::get('/training', [Agency\TrainingController::class, 'index'])->name('training.index');
+        Route::get('/training/{trainingCourse}', [Agency\TrainingController::class, 'show'])->name('training.show');
+        Route::get('/training/{trainingCourse}/lessons/{trainingLesson}', [Agency\TrainingController::class, 'lesson'])->name('training.lesson');
+        Route::post('/training/{trainingCourse}/lessons/{trainingLesson}/complete', [Agency\TrainingController::class, 'complete'])->name('training.complete');
     });
 
 // ── Public Intake Widget (no auth) ───────────────────────────────────────────
